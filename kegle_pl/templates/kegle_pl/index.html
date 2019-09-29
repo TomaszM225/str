@@ -4,7 +4,7 @@
 
 <h1>Strona Główna</h1>
 <p><em>--- Sekcja ogłoszenie ---</em></p>
-    {% for artykul_glowna in artykul_glowna %}
+    {% for artykuly_glowna in artykuly_glowna %}
         <h3><p>{{ artykul_glowna.tytul }}</p></h3>
         <p>{% autoescape off %}{{ artykul_glowna.tresc_wpisu }}{% endautoescape %}</p>
     {% endfor %}

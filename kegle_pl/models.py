@@ -25,7 +25,7 @@ class Wpis(models.Model):
         Artykół - strona z jakimś tekstem dotyczącym userów,
         Ogłoszenie - info dotyczące zawodów, 
         Zawody - zestaw informacji dotycząca zawodów, 
-        Reklama. Jest w formie strony www ."""
+        Reklama. Jest w formie strony www. """
     
     WYBOR_STATUSU = (
     ('r', 'Roboczy'),
@@ -55,7 +55,7 @@ class Wpis(models.Model):
         return self.tytul
 
 class Artykul(Wpis):
-    """ Wpis artykuł dziedziczy pola wpisu i dodaje swoje"""
+    """ Wpis artykuł dziedziczy pola wpisu i dodaje swoje """
     
     tresc_artykulu = models.TextField('Treść artykułu', help_text='treść artykułu')
     aktualny_do = models.DateTimeField('Do daty', blank=True, help_text=' po aktualny_do_daty nie ma być widzoczny')
@@ -71,8 +71,7 @@ class Artykul(Wpis):
         return str(nazwa_z_wpisu.tytul)
 
 class Ogloszenie(Wpis):
-    """ Ogłoszeni organizatora, biura zawodów, lub admina, dotyczące zawodów.
-    """
+    """ Ogłoszeni organizatora, biura zawodów, lub admina, dotyczące zawodów. """
     
     tresc_ogloszenia = models.TextField('Treść ogłoszenia', help_text='treść ogłoszenia')
     aktywne_do = models.DateTimeField(null=True)
@@ -86,7 +85,8 @@ class Ogloszenie(Wpis):
         return str(nazwa_z_wpisu.tytul)
 
 class PrzepisyProgramy(Wpis):
-    """ Przepisy i Programy kopiowane do katalogu /programy/ z podziałem na lata dodania. Pliki PDF"""
+    """ Przepisy i Programy kopiowane do katalogu /programy/ z podziałem na lata dodania.
+    Pliki format PDF. """
 
     KATEGORIA_PP = (
     ('przepis', 'Przepisy'),
@@ -164,7 +164,7 @@ class Zawody(Wpis):
         return self.oficjalna_nazwa
     
     def get_absolute_url(self):
-        """Returns the url to access a particular instance of MyModelName."""
+        """Returns the url to access a particular instance of MyModelName. """
         return reverse('lista_zawodow', args=[str(self.id)])
 
 class ZawodyKomunikaty(models.Model):
@@ -235,7 +235,7 @@ class Oplaty(models.Model):
 class Konkursy(models.Model):
     """ Konkursy odbywające się na poszczególnych zawodach. Konkursy "maja"
     zawody, klasy, opłaty. Podczas Zawodów odbywają się konkursy w klasach 
-    z właściwymi opłatami. Różne konkursy mogą mieć takie same opłaty."""
+    z właściwymi opłatami. Różne konkursy mogą mieć takie same opłaty. """
     
     zawody = models.ForeignKey(Zawody, on_delete=models.CASCADE, related_name='KonkursyZawody')
     klasy = models.ForeignKey(Klasy, on_delete=models.CASCADE, related_name='KonkursyKlasy')
