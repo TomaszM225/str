@@ -38,9 +38,13 @@ class ArtykulAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('tytul',)}
     form = ArtykulAdminForm
     
-class PrzepisyProgramyAdmin(admin.ModelAdmin):
+class PrzepisyAdmin(admin.ModelAdmin):
+    prepopulated_fields = {'slug': ('tytul',)}
+    
+class ProgramyAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('tytul',)}
 
-admin.site.register(PrzepisyProgramy,PrzepisyProgramyAdmin)
+admin.site.register(Przepisy,PrzepisyAdmin)
+admin.site.register(Programy,ProgramyAdmin)
 admin.site.register(Artykul, ArtykulAdmin)
 #admin.site.register(Zawody, ZawodyAdmin)

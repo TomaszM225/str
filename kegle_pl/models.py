@@ -44,7 +44,7 @@ class Wpis(models.Model):
     poprawiony = models.DateTimeField(auto_now=True)
     status = models.CharField(max_length=1, choices=WYBOR_STATUSU, default='r', help_text='status wpisu')
     kategoria = models.CharField(max_length=10, choices=WYBOR_KATEGORII, default='doc' )
-    dla_grupy = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='NalezyDoGrupy')
+    dla_grupy = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='DlaGrupy')
     
     class Meta:
         db_table = 'n_wpisy'
@@ -83,27 +83,6 @@ class Ogloszenie(Wpis):
     def __str__(self):
         nazwa_z_wpisu = Wpis.objects.get(pk=self.pk)
         return str(nazwa_z_wpisu.tytul)
-
-class PrzepisyProgramy(Wpis):
-    """ Przepisy i Programy kopiowane do katalogu /programy/ z podziałem na lata dodania.
-    Pliki format PDF. """
-
-    KATEGORIA_PP = (
-    ('przepis', 'Przepisy'),
-    ('program', 'Programy'),
-    )
-    rodzaj = models.CharField(max_length=10, choices=KATEGORIA_PP)
-    opis_tresci = models.CharField(max_length=250, null=True, help_text='Skrótowo co zawiera treść przepisu/programu')
-    obowiazuje_od = models.DateField(help_text='Początek obowiązywania')
-    path_plik = models.FileField(upload_to=dokumenty_directory_path)
-    
-    class Meta:
-        db_table = 'n_przepisy_programy'
-        verbose_name_plural = "Przepisy/Programy"
-        ordering = ('-obowiazuje_od',)
-    
-    def __str__(self):
-        return '%s''/' '%s' % (self.tytul, self.kategoria)
     
 class Instytucje(models.Model):
     """ Instytucje - Organizator zawodów, Klub, Federacja, Reklamodawca -
@@ -257,3 +236,38 @@ class Konkursy(models.Model):
         
     def __str__(self):
         return '%s' %(self.klasy)
+    
+class Przepisy(Wpis):
+    """ Przepisy  kopiowane do katalogu /przepisy/ z podziałem na lata dodania.
+    Pliki format PDF. """
+
+    opis_tresci = models.CharField(max_length=250, null=True, help_text='Skrótowo co zawiera treść przepisu/programu')
+    obowiazuje_od = models.DateField(help_text='Początek obowiązywania')
+    path_plik = models.FileField(upload_to=dokumenty_directory_path)
+    
+    class Meta:
+        db_table = 'n_przepisy'
+        verbose_name_plural = "Przepisy"
+        ordering = ('-obowiazuje_od',)
+    
+    def __str__(self):
+        return '%s''-' '%s' % (self.tytul, self.obowiazuje_od)
+
+class Programy(Wpis):
+    """ Programy  kopiowane do katalogu /programy/ z podziałem na lata dodania.
+    Pliki format PDF. """
+
+    opis_tresci = models.CharField(max_length=250, null=True, help_text='Skrótowo co zawiera treść przepisu/programu')
+    klasa_id = models.ForeignKey(Klasy, on_delete=models.CASCADE, related_name='DlaKlasy')
+    obowiazuje_od = models.DateField(help_text='Początek obowiązywania')
+    data_zmiany = models.DateField(null=True, help_text='Data zmiany wpisu')
+    plik_opis = models.FileField(upload_to=dokumenty_directory_path)
+    rysunek_plik = models.FileField(upload_to=dokumenty_directory_path, null=True)
+    
+    class Meta:
+        db_table = 'n_programy'
+        verbose_name_plural = "Programy"
+        ordering = ('-obowiazuje_od',)
+    
+    def __str__(self):
+        return '%s''-' '%s' % (self.klasa_id.nazwa_klasy, self.tytul, self.obowiazuje_od)
