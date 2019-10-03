@@ -23,8 +23,10 @@
 		  {% block sidebar %}
 			<ul class="sidebar-nav">
 			  <li><a href="{% url 'index' %}">Główna</a></li>
+			  
+			  <li><a href="{% url 'przepisy' %}">Przepisy</a></li>
+			  <li><a href="{% url 'programy' %}">Programy</a></li>
 			  {% comment %}
-			  <li><a href="{% url 'przepisy_programy' %}">Przepisy i programy</a></li>
 			  <li><a href="{% url 'zawody_archiwum' %}">Archiwum</a></li>
 			  <li><a href="">InnyLink</a></li>
 			 {% if user.is_authenticated %}

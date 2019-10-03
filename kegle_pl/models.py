@@ -18,7 +18,13 @@ def dokumenty_directory_path(instance, filename):
     """ Ścieżka dla plików programów i przepisów 
     Pliki będą ładowane do MEDIA_ROOT/<rodzaj>/<rok>/<filename>"""
     
-    return '{0}/{1}/{2}'.format(instance.rodzaj+'y', datetime.datetime.now().strftime ("%Y"), filename)
+    if isinstance(instance, Przepisy):
+        print("instancja przepisy",instance)
+        return 'przepisy/{0}/{1}'.format(datetime.datetime.now().strftime ("%Y"), filename)
+    if isinstance(instance, Programy):
+        print("instancja programy",instance)
+        return 'programy/{0}/{1}'.format(datetime.datetime.now().strftime ("%Y"), filename)
+    #return '{0}/{1}/{2}'.format(instance.rodzaj+'y', datetime.datetime.now().strftime ("%Y"), filename)
 
 class Wpis(models.Model):
     """ Wpis podstawowa jednostka na portalu. Wpisem może być 
@@ -58,9 +64,9 @@ class Artykul(Wpis):
     """ Wpis artykuł dziedziczy pola wpisu i dodaje swoje """
     
     tresc_artykulu = models.TextField('Treść artykułu', help_text='treść artykułu')
-    aktualny_do = models.DateTimeField('Do daty', blank=True, help_text=' po aktualny_do_daty nie ma być widzoczny')
+    aktualny_do = models.DateTimeField('Do daty', blank=True, null=True, help_text=' po aktualny_do_daty nie ma być widzoczny')
     kolejnosc_artykulu = models.PositiveIntegerField(default='0', help_text='wymuszenie kolejości artykułów')
-    na_glownej = models.BooleanField(default='0', help_text='czy ma być umieszczony na stronie głównej')
+    na_glownej = models.BooleanField(default=False, help_text='czy ma być umieszczony na stronie głównej')
     
     class Meta:
         db_table = 'n_artykuly'
@@ -68,7 +74,7 @@ class Artykul(Wpis):
 
     def __str__(self):
         nazwa_z_wpisu = Wpis.objects.get(pk=self.pk)
-        return str(nazwa_z_wpisu.tytul)
+        return '%s'  'kolejnosc  ' '%s' % (nazwa_z_wpisu.tytul, self.kolejnosc_artykulu)
 
 class Ogloszenie(Wpis):
     """ Ogłoszeni organizatora, biura zawodów, lub admina, dotyczące zawodów. """
@@ -251,18 +257,17 @@ class Przepisy(Wpis):
         ordering = ('-obowiazuje_od',)
     
     def __str__(self):
-        return '%s''-' '%s' % (self.tytul, self.obowiazuje_od)
+        return '%s'' obowiązuje od ' '%s' % (self.tytul, self.obowiazuje_od)
 
 class Programy(Wpis):
     """ Programy  kopiowane do katalogu /programy/ z podziałem na lata dodania.
     Pliki format PDF. """
-
+#TODO: Zrobić tak by klase można bło filtrowac
     opis_tresci = models.CharField(max_length=250, null=True, help_text='Skrótowo co zawiera treść przepisu/programu')
-    klasa_id = models.ForeignKey(Klasy, on_delete=models.CASCADE, related_name='DlaKlasy')
+    klasa = models.ForeignKey(Klasy, on_delete=models.CASCADE, related_name='DlaKlasy')
     obowiazuje_od = models.DateField(help_text='Początek obowiązywania')
     data_zmiany = models.DateField(null=True, help_text='Data zmiany wpisu')
-    plik_opis = models.FileField(upload_to=dokumenty_directory_path)
-    rysunek_plik = models.FileField(upload_to=dokumenty_directory_path, null=True)
+    plik_opis = models.FileField(upload_to=dokumenty_directory_path, help_text='Plik opisu plus ew rys')
     
     class Meta:
         db_table = 'n_programy'
@@ -270,4 +275,4 @@ class Programy(Wpis):
         ordering = ('-obowiazuje_od',)
     
     def __str__(self):
-        return '%s''-' '%s' % (self.klasa_id.nazwa_klasy, self.tytul, self.obowiazuje_od)
+        return '%s'' obowiązuje od ' '%s' % (self.tytul, self.obowiazuje_od)

@@ -1,0 +1,24 @@
+{% extends "kegle_pl/base_generic.html" %}
+
+{% block content %}
+<h1>Przepisy ujeżdżeniowe</h1>
+<p><em>--- Sekcji lista przepisów ---</em></p>
+	{% if przepisy %}
+		{% regroup przepisy by opublikowany|date:"Y" as sort_by_year %} 
+			{% for years in sort_by_year %}
+				<b>Rok ogłoszenia: {{ years.grouper }}</b>
+				<ul>
+					{% for przepisy in years.list %}
+					<li>
+						<a href="{% url 'przepisy_detail' pk=przepisy.slug %}">{{ przepisy.tytul }}</a><br/>
+						<em>Uwagi:{{przepisy.opis_tresci}}</em>
+					</li>
+					{% endfor %}
+				</ul>
+			{% endfor %}
+	{% else %}
+		<p>Brak wpisów w liście przepisy.</p>
+	{% endif %}
+<p><em>--- Koniec sekcji lista przepisów ---</em></p>
+
+{% endblock %}

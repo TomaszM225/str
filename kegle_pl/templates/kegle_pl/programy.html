@@ -1,0 +1,20 @@
+{% extends "kegle_pl/base_generic.html" %}
+
+{% block content %}
+<h1>Programy ujeżdżeniowe</h1>
+
+<p><em>--- Sekcji lista programów ---</em></p>
+	{% if programy %}
+		<ul>
+			{% for programy in programy %}
+				<li>
+					<a href="{% url 'programy_detail' pk=programy.slug %}">{{ programy.tytul }} </a><br/>
+					<em>Uwagi:</em>{{programy.opis_tresci}}<br/>	
+				</li>
+			{% endfor %}
+		</ul>
+	{% else %}
+		<p>Brak wpisów w liście programy.</p>
+	{% endif %}
+<p><em>--- Koniec sekcji lista programów ---</em></p>
+{% endblock %}

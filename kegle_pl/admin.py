@@ -2,8 +2,8 @@ from django.contrib import admin
 from .models import *
 from django import forms
 from ckeditor.widgets import CKEditorWidget
+
 #TODO: Zainstaluj ckeditr edytor HTML polecenie pip3 install django-ckeditor 
- 
 
 #class ZawodyAdminForm(forms.ModelForm):
 #     
@@ -26,25 +26,26 @@ class ArtykulAdminForm(forms.ModelForm):
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.initial['kategoria'] = 'ogloszenie'
-        
+    
     class Meta:
         model = Artykul
         fields = '__all__'
-        exclude = ['kategoria']
 
 class ArtykulAdmin(admin.ModelAdmin):
-    list_display = ('tytul', 'status', 'poprawiony')
+    list_display = ('tytul', 'status', 'poprawiony',  'na_glownej', 'kolejnosc_artykulu')
     prepopulated_fields = {'slug': ('tytul',)}
     form = ArtykulAdminForm
     
 class PrzepisyAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('tytul',)}
     
+    
 class ProgramyAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('tytul',)}
 
+
+admin.site.register(Artykul, ArtykulAdmin)
 admin.site.register(Przepisy,PrzepisyAdmin)
 admin.site.register(Programy,ProgramyAdmin)
-admin.site.register(Artykul, ArtykulAdmin)
+
 #admin.site.register(Zawody, ZawodyAdmin)

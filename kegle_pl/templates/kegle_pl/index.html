@@ -3,10 +3,11 @@
 {% block content %}
 
 <h1>Strona Główna</h1>
-<p><em>--- Sekcja ogłoszenie ---</em></p>
+<p><em>--- Sekcja artykuły ---</em></p>
     {% for artykuly_glowna in artykuly_glowna %}
-        <h3><p>{{ artykul_glowna.tytul }}</p></h3>
-        <p>{% autoescape off %}{{ artykul_glowna.tresc_wpisu }}{% endautoescape %}</p>
+        <h3><p>{{ artykuly_glowna.tytul }}</p></h3>
+        
+        <p>{% autoescape off %}{{ artykuly_glowna.tresc_artykulu }}{% endautoescape %}</p>
     {% endfor %}
 <p><em>--- Koniec sekcji ogłoszenie ---</em></p>
 <p><em>--- Sekcji lista aktualnie rozgrywanych zawodów ---</em></p>
