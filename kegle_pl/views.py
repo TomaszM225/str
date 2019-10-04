@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 # from django.shortcuts import render, get_object_or_404, redirect, get_list_or_404 
 from django.http import HttpResponse
-from kegle_pl.models import Artykul, Zawody, Przepisy, Programy, ZawodyKomunikaty
+from kegle_pl.models import Artykul, Przepisy, Programy, Instytucje, Oplaty, Klasy, Konkursy, Zawody,  ZawodyKomunikaty
 
 
 def index(request): #Widok strony głównej
@@ -51,4 +51,19 @@ def arch_programow_przepisow(request):
     """ Widok programów i przepisów  w archiwum """
     # TODO: Napisac obsługę
     pass
+
+def zawody_aktywne(request):
+    """Widok zawodów ze statusem wpisu opublikowany na stronie index.
+    pogrupowane eg statusu zawodów:  'odbywajace_sie' osobna sekcja oraz
+    'otwarte_dla_zgl' i 'zablokowane_dla_zgl'posortowane wg daty rozpoczęcia. """ 
+    # TODO: Na stronie na telefon powinno się robić tafelki zawodów do sprawdzenia
+    
+    zawody_otwarte_ = get_object_or_404(Zawody, status_zawodow='o')
+    context = {
+               'zawody_otwarte': zawody_otwarte_
+               }
+    return render(request, 'kegle_pl/index.html', context=context)
+
+def zawody_aktywne_detale(request):
+    
     

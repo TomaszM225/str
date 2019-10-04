@@ -24,8 +24,6 @@ def dokumenty_directory_path(instance, filename):
     if isinstance(instance, Programy):
         print("instancja programy",instance)
         return 'programy/{0}/{1}'.format(datetime.datetime.now().strftime ("%Y"), filename)
-    #return '{0}/{1}/{2}'.format(instance.rodzaj+'y', datetime.datetime.now().strftime ("%Y"), filename)
-
 class Wpis(models.Model):
     """ Wpis podstawowa jednostka na portalu. Wpisem może być 
         Artykół - strona z jakimś tekstem dotyczącym userów,
@@ -102,9 +100,10 @@ class Instytucje(models.Model):
     )
     rodzaj_instytucji = models.PositiveIntegerField(choices=RODZAJ_INSTYTUCJI, help_text='Rodzaj instytucji')
     nazwa_instytucji = models.CharField(max_length=255, help_text='Nazwa instytucji')
-    adres_instytucji = models.CharField(max_length=255, help_text='Adre sintytucji', blank=True)
+    adres_instytucji = models.CharField(max_length=255, help_text='Adres pocztowy intytucji', blank=True)
+
 #     kraj_instytucji = models.ForeignKey(Kraje, on_delete=models.CASCADE, related_name='KrajInstytucji')
-    status = models.BooleanField(default=False)
+    aktywna = models.BooleanField(default=False, help_text='czy aktywna?')
     
     class Meta:
         db_table = 'n_instytucje'
@@ -112,6 +111,55 @@ class Instytucje(models.Model):
         
     def __str__(self):
         return self.nazwa_instytucji
+
+class Klasy(models.Model):
+    """ Klasy sportowe w powożeniu. """
+    
+    RODZAJ_KLASY = (
+    (1,'single'),
+    (2,'pary'),
+    (4,'czwórki'),
+    )
+    klasa = models.CharField(max_length=255, blank=True, null=True)
+    rodzaj_klasy = models.PositiveIntegerField(choices=RODZAJ_KLASY, help_text='startująca ilosc konii c-2 -> 2')
+    opis_klasy = models.CharField(max_length=255, blank=True, null=True)
+    poptawiono = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'n_klasy'
+        verbose_name_plural = "Klasy"
+        ordering = ('klasa',)
+        
+    def __str__(self):
+        return self.klasa
+
+class Oplaty(models.Model):
+    """Opłaty zestaw. Anty dopingowa nalezy rozumiec w następujący sposób
+    zawody krajowe kwota od konia który przeszedł przeglą w zł/eu, zawody
+    międzynarodowe kwota w frankach stała od zaprzęgu. """
+    
+    WALUTA = (
+    ('zl','złoty'),
+    ('eur','euro'),
+    )
+    kod_oplaty = models.CharField(max_length=150, help_text='Skrótowa nazwa/kod opłaty')
+    waluta = models.CharField(max_length=5,choices=WALUTA, help_text='Waluta opłat')
+    wpisowe = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True, help_text='główne wpisowe jeśli brak wpisz 0')
+    wpisowe_2 = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True, help_text='wpisowe dla dalszych par') 
+    oplata_antydopingowa = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True)
+    boks_cena = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True)
+    trociny_cena = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True,help_text='Cena za jednostkę') 
+    wywoz_gowna = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True,help_text='Cena za jednostkkę')
+    energia_koniowoz_cena = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True)
+    energia_bus_cena = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True)
+    poprawiono = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        db_table = 'n_oplaty'
+        verbose_name_plural = "Opłaty"
+    
+    def __str__(self):
+        return str(self.kod_oplaty) #póżniej napisać kod czytający również tytuł zawodów
 
 class Zawody(Wpis):
     """ Status zawodów otawrte można się zgłaszać, zamknięte brak 
@@ -159,7 +207,7 @@ class ZawodyKomunikaty(models.Model):
     zawody_id = models.ForeignKey(Zawody, on_delete=models.CASCADE)
     komunikat = models.TextField('Treść komunikatu', help_text='treść Komunikatu do Zawodów')
     data_czas_komunikatu = models.DateTimeField(default=timezone.now)
-    kolejnosc_komuniakatu = models.PositiveIntegerField(default='0', help_text='wymuszenie kolejości komunikatów')
+    kolejnosc_komuniakatu = models.PositiveIntegerField(default=0, help_text='wymuszenie kolejości komunikatów')
     del_komunikat = models.BooleanField(default = False)
     
     class Meta:
@@ -168,55 +216,6 @@ class ZawodyKomunikaty(models.Model):
     
     def __str__(self):
         return str(self.zawody_id)
-
-class Klasy(models.Model):
-    """ Klasy sportowe w powożeniu. """
-    
-    RODZAJ_KLASY = (
-    (1,'single'),
-    (2,'pary'),
-    (4,'czwórki'),
-    )
-    nazwa_klasy = models.CharField(max_length=255, blank=True, null=True)
-    opis_klasy = models.CharField(max_length=255, blank=True, null=True)
-    poptawiono = models.DateTimeField(auto_now=True)
-    rodzaj_klasy = models.PositiveIntegerField(choices=RODZAJ_KLASY, help_text='startująca ilosc konii c-2 -> 2')
-
-    class Meta:
-        db_table = 'n_klasy'
-        verbose_name_plural = "Klasy"
-        ordering = ('nazwa_klasy',)
-        
-    def __str__(self):
-        return self.nazwa_klasy
-
-class Oplaty(models.Model):
-    """Opłaty zestaw. Anty dopingowa nalezy rozumiec w następujący sposób
-    zawody krajowe kwota od konia który przeszedł przeglą w zł/eu, zawody
-    międzynarodowe kwota w frankach stała od zaprzęgu. """
-    
-    WALUTA = (
-    ('zl','złoty'),
-    ('eur','euro'),
-    )
-    kod_oplaty = models.CharField(max_length=150, help_text='Skrótowa nazwa/kod opłaty')
-    waluta = models.CharField(max_length=5,choices=WALUTA, help_text='Waluta opłat')
-    wpisowe = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True, help_text='główne wpisowe jeśli brak wpisz 0')
-    wpisowe_2 = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True, help_text='wpisowe dla dalszych par') 
-    oplata_antydopingowa = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True)
-    boks_cena = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True)
-    trociny_cena = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True,help_text='Cena za jednostkę') 
-    wywoz_gowna = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True,help_text='Cena za jednostkkę')
-    energia_koniowoz_cena = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True)
-    energia_bus_cena = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True)
-    poprawiono = models.DateTimeField(auto_now=True)
-    
-    class Meta:
-        db_table = 'n_oplaty'
-        verbose_name_plural = "Opłaty"
-    
-    def __str__(self):
-        return str(self.kod_oplaty) #póżniej napisać kod czytający również tytuł zawodów
 
 class Konkursy(models.Model):
     """ Konkursy odbywające się na poszczególnych zawodach. Konkursy "maja"
@@ -264,7 +263,7 @@ class Programy(Wpis):
     Pliki format PDF. """
 #TODO: Zrobić tak by klase można bło filtrowac
     opis_tresci = models.CharField(max_length=250, null=True, help_text='Skrótowo co zawiera treść przepisu/programu')
-    klasa = models.ForeignKey(Klasy, on_delete=models.CASCADE, related_name='DlaKlasy')
+    klasa_id = models.ForeignKey(Klasy, on_delete=models.CASCADE, related_name='DlaKlasy')
     obowiazuje_od = models.DateField(help_text='Początek obowiązywania')
     data_zmiany = models.DateField(null=True, help_text='Data zmiany wpisu')
     plik_opis = models.FileField(upload_to=dokumenty_directory_path, help_text='Plik opisu plus ew rys')

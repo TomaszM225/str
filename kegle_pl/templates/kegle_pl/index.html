@@ -2,7 +2,7 @@
 
 {% block content %}
 
-<h1>Strona Główna</h1>
+<h1>Strona Index</h1>
 <p><em>--- Sekcja artykuły ---</em></p>
     {% for artykuly_glowna in artykuly_glowna %}
         <h3><p>{{ artykuly_glowna.tytul }}</p></h3>
@@ -15,7 +15,7 @@
     <ul>
         {% for zawody_rozgrywane in zawody_rozgrywane %}
         <li>
-            <a href="{% url 'zawody_detail' pk=zawody_rozgrywane.pk  %}"> <img src="{{ zawody_rozgrywane.logo_zawodow.url }}" alt="Logo" height="40" width="40">{{ zawody_rozgrywane.tytul }}</a>
+            <a href="{% url 'zawody_aktywne' pk=zawody_rozgrywane.pk  %}"> <img src="{{ zawody_rozgrywane.logo_zawodow.url }}" alt="Logo" height="40" width="40">{{ zawody_rozgrywane.tytul }}</a>
         </li>
         {% endfor %}
     </ul>
@@ -29,9 +29,9 @@
         {% for zawody_otwarte in zawody_otwarte %}
         <li>
             {% if zawody_otwarte.status_zawodow == 1 %}
-            <a href="{% url 'zawody_otwarte_detail' pk=zawody_otwarte.pk  %}"> <img src="{{ zawody_otwarte.logo_zawodow.url }}" alt="Logo" height="40" width="40">{{ zawody_otwarte.tytul }} ({{zawody_otwarte.data_rozpoczecia|date:"d/m/Y"}} - {{zawody_otwarte.data_zakonczenia|date:"d/m/Y"}})</a>
+            <a href="{% url 'zawody_aktywne' pk=zawody_otwarte.pk  %}"><img src="{{ zawody_otwarte.logo_zawodow.url }}" alt="Logo" height="40" width="40">  {{ zawody_otwarte.tytul }} ({{zawody_otwarte.data_rozpoczecia|date:"d/m/Y"}} - {{zawody_otwarte.data_zakonczenia|date:"d/m/Y"}})</a>
             {% else %}
-            <a href="{% url 'zawody_otwarte_detail' pk=zawody_otwarte.pk  %}"><img src="{{ zawody_otwarte.logo_zawodow.url }}" alt="Logo" height="40" width="40"> {{ zawody_otwarte.tytul }} ({{zawody_otwarte.data_rozpoczecia|date:"d/m/Y"}} - {{zawody_otwarte.data_zakonczenia|date:"d/m/Y"}})</a>zgłoszenia zamknięte <em>będzie grafka o zamknięciu</em>
+            <a href="{% url 'zawody_aktywne' pk=zawody_otwarte.pk  %}"><img src="{{ zawody_otwarte.logo_zawodow.url }}" alt="Logo" height="40" width="40">  {{ zawody_otwarte.tytul }} ({{zawody_otwarte.data_rozpoczecia|date:"d/m/Y"}} - {{zawody_otwarte.data_zakonczenia|date:"d/m/Y"}})</a>zgłoszenia zamknięte <em>  (będzie grafka o zamknięciu</em>
             {% endif %}
         </li>
         {% endfor %}   
