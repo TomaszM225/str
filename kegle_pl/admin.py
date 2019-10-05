@@ -45,6 +45,23 @@ class ProgramyAdmin(admin.ModelAdmin):
 # class OplatyAdmin(admin.ModelAdmin):
 #     prepopulated_fields = {'kod_oplaty'}
 
+
+class ZawodyKomunikatyAdminForm(forms.ModelForm):
+    komunikat = forms.CharField(widget=CKEditorWidget())
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+    
+    class Meta:
+        model = ZawodyKomunikaty
+        fields = '__all__'
+
+class ZawodyKomunikatyAdmin(admin.ModelAdmin):
+    list_display = ('zawody_id', 'data_czas_komunikatu', 'kolejnosc_komuniakatu',  'del_komunikat')
+    #prepopulated_fields = {'slug': ('tytul',)}
+    form = ZawodyKomunikatyAdminForm
+    
+    
 admin.site.register(Artykul, ArtykulAdmin)
 admin.site.register(Przepisy,PrzepisyAdmin)
 admin.site.register(Programy,ProgramyAdmin)
@@ -53,3 +70,4 @@ admin.site.register(Oplaty)
 admin.site.register(Instytucje)
 admin.site.register(Konkursy)
 admin.site.register(Klasy)
+admin.site.register(ZawodyKomunikaty,ZawodyKomunikatyAdmin)

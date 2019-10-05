@@ -53,17 +53,65 @@ def arch_programow_przepisow(request):
     pass
 
 def zawody_aktywne(request):
-    """Widok zawodów ze statusem wpisu opublikowany na stronie index.
+    """Widok listy zawodów ze statusem wpisu opublikowany na stronie index.
     pogrupowane eg statusu zawodów:  'odbywajace_sie' osobna sekcja oraz
     'otwarte_dla_zgl' i 'zablokowane_dla_zgl'posortowane wg daty rozpoczęcia. """ 
     # TODO: Na stronie na telefon powinno się robić tafelki zawodów do sprawdzenia
     
     zawody_otwarte_ = get_object_or_404(Zawody, status_zawodow='o')
+    zawody_rozgrywane_ = Zawody.objects.filter(status_zawodow=3).filter(status='o').order_by('data_rozpoczecia')
     context = {
-               'zawody_otwarte': zawody_otwarte_
-               }
+               'zawody_otwarte': zawody_otwarte_,
+               'zawody_rozgrywane':zawody_rozgrywane_
+    }
     return render(request, 'kegle_pl/index.html', context=context)
 
-def zawody_aktywne_detale(request):
+def zawody_aktywne_propozycje(request, pk):
+    """Widok do obsługi linków otwierającyhc pdf`a propozycji"""
     
+    zawody = get_object_or_404(Zawody, slug=pk)
+    pdf_data=zawody.propozycje_plik.open(mode='rb')
+    return HttpResponse(pdf_data, content_type = "application/pdf")
+
+def zawody_aktywne_detail(request, pk):
+    """ Widok detali dla wybranych zawodów. Sekcje: komunikat-
+    treść komunikatu dla wszystkicj dotyczace tych zawodów, propozycje -
+    link do propozycjj, lista zgłoszonych."""
     
+    zawodyInstancja = get_object_or_404(Zawody, pk=pk)
+    try:
+        text = ZawodyKomunikaty.objects.get(zawody_id=pk)
+    except ZawodyKomunikaty.DoesNotExist:
+        text = 'none'
+#     if not request.user.is_authenticated:
+#         konkursy_lista = Konkursy.objects.filter(zawody = pk)
+#         zgloszenia_lista = Zgloszenia.objects.filter(zawody = pk)
+#         zgloszenia_lista = "To będzie skrucona lista zgłoszeń"
+    context = {
+               'text':text,
+               'zawodyInstancja':zawodyInstancja,
+#             'konkursy_lista':konkursy_lista,
+#             'zgloszenia_lista':zgloszenia_lista,
+    }
+        
+    return render(request, 'kegle_pl/zawody_aktywne_detail.html',  context=context)
+    
+def zawody_rozgrywane_detail(request, pk):
+    """ Widok detali zawodów rogrywanych listy startowe itp"""
+    
+    zawodyInstancja = get_object_or_404(Zawody, pk=pk)
+    try:
+        text = ZawodyKomunikaty.objects.get(zawody_id=pk)
+    except ZawodyKomunikaty.DoesNotExist:
+        text = 'none'
+#     if not request.user.is_authenticated:
+#         konkursy_lista = Konkursy.objects.filter(zawody = pk)
+#         zgloszenia_lista = Zgloszenia.objects.filter(zawody = pk)
+#         zgloszenia_lista = "To będzie skrucona lista zgłoszeń"
+    context = {
+               'text':text,
+               'zawodyInstancja':zawodyInstancja,
+#             'konkursy_lista':konkursy_lista,
+#             'zgloszenia_lista':zgloszenia_lista,
+    }
+    return render(request, 'kegle_pl/zawody_rozgrywane_detail.html',  context=context)
