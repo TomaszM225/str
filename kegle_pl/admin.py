@@ -57,7 +57,7 @@ class ZawodyKomunikatyAdminForm(forms.ModelForm):
         fields = '__all__'
 
 class ZawodyKomunikatyAdmin(admin.ModelAdmin):
-    list_display = ('zawody_id', 'data_czas_komunikatu', 'kolejnosc_komuniakatu',  'del_komunikat')
+    list_display = ('tytul_komunikatu', 'zawody_id', 'data_czas_komunikatu', 'kolejnosc_komuniakatu',  'del_komunikat')
     #prepopulated_fields = {'slug': ('tytul',)}
     form = ZawodyKomunikatyAdminForm
     

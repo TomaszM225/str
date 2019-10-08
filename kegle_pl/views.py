@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, get_list_or_404
 # from django.shortcuts import render, get_object_or_404, redirect, get_list_or_404 
 from django.http import HttpResponse
 from kegle_pl.models import Artykul, Przepisy, Programy, Instytucje, Oplaty, Klasy, Konkursy, Zawody,  ZawodyKomunikaty
@@ -80,9 +80,11 @@ def zawody_aktywne_detail(request, pk):
     
     zawodyInstancja = get_object_or_404(Zawody, pk=pk)
     try:
-        text = ZawodyKomunikaty.objects.get(zawody_id=pk)
+        text = ZawodyKomunikaty.objects.filter(zawody_id=pk)
     except ZawodyKomunikaty.DoesNotExist:
         text = 'none'
+    konkursy_lista = Konkursy.objects.filter(zawody = pk)
+    print("lista konkursów",konkursy_lista)
 #     if not request.user.is_authenticated:
 #         konkursy_lista = Konkursy.objects.filter(zawody = pk)
 #         zgloszenia_lista = Zgloszenia.objects.filter(zawody = pk)
@@ -90,7 +92,7 @@ def zawody_aktywne_detail(request, pk):
     context = {
                'text':text,
                'zawodyInstancja':zawodyInstancja,
-#             'konkursy_lista':konkursy_lista,
+               'konkursy_lista':konkursy_lista,
 #             'zgloszenia_lista':zgloszenia_lista,
     }
         
@@ -101,7 +103,7 @@ def zawody_rozgrywane_detail(request, pk):
     
     zawodyInstancja = get_object_or_404(Zawody, pk=pk)
     try:
-        text = ZawodyKomunikaty.objects.get(zawody_id=pk)
+        text = ZawodyKomunikaty.objects.filter(zawody_id=pk)
     except ZawodyKomunikaty.DoesNotExist:
         text = 'none'
 #     if not request.user.is_authenticated:

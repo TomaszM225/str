@@ -205,8 +205,11 @@ class ZawodyKomunikaty(models.Model):
     przez organizatora. """
     
     zawody_id = models.ForeignKey(Zawody, on_delete=models.CASCADE)
+    tytul_komunikatu = models.CharField(max_length=255, help_text='krótki tytuł komunikatu')
     komunikat = models.TextField('Treść komunikatu', help_text='treść Komunikatu do Zawodów')
     data_czas_komunikatu = models.DateTimeField(default=timezone.now)
+    #TODO: może zrobić tylko zawsze i do rozpoczęcia zawodów??
+    aktywny_do = models.DateTimeField(blank=True, null=True, help_text='data po której ma być nie widoczny, puste oznacza zawsze')
     kolejnosc_komuniakatu = models.PositiveIntegerField(default=0, help_text='wymuszenie kolejości komunikatów')
     del_komunikat = models.BooleanField(default = False)
     
