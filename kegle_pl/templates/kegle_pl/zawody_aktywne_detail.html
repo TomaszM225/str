@@ -1,0 +1,72 @@
+{% extends "kegle_pl/base_generic.html" %}
+
+{% block content %}
+<h3><img src="{{ zawodyInstancja.logo_zawodow.url }}" alt="Logo" height="80" width="80">   {{ zawodyInstancja.oficjalna_nazwa }}</h3>
+<p><em>--- Sekcja ogłoszenie ---</em><br/>
+    {% if text %}
+    	{% for text in text %}
+    		{{ text.data_czas_komunikatu }} <br/>
+        	<p>{% autoescape off %}{{ text.komunikat }}{% endautoescape %}</p>
+       	{% endfor %}
+    {% else %}
+        <p>Brak aktywnych komunikatów.</p>
+    {% endif %}
+<em>--- Koniec sekcji ogłoszenie ---</em>
+</p>
+
+
+<p><em>--- Sekcja linku do propozycji ---</em>
+    {% if zawodyInstancja.propozycje_plik %}
+        <p><a href="{% url 'zawody_aktywne_propozycje' pk=zawodyInstancja.slug %}" target="_blank">Propozycje - {{zawodyInstancja.oficjalna_nazwa}} </a></p>
+    {% else %}
+        <h3>Brak propozycji</h3>
+    {% endif %}
+<em>--- Koniec sekcji linku do propozycji ---</em>
+</p>
+
+<p><em>Sekcja linków do zgłoszeń</em>
+{% if user.is_authenticated or zawodyInstancja.status_zawodow == 2 %}
+    {%if konkursy_lista == 'none' %}
+    <p>Do zawodów zgłasza admin klubu</p>
+    {% else %}
+        <p><h3><b>Zgłoszenie </b></h3></p>
+        {% if zawodyInstancja.status_zawodow == 1 %}
+            <em>to będzie link do konkursów do których mozna się dopisać</em>
+            {% comment %}
+            <p><a href="{% url 'zgloszenia_dodaj' pk=zawodyInstancja.pk %}" >Zgłoszenie do {{zawodyInstancja.oficjalna_nazwa}} </a></p>
+        	{% endcomment %}
+        {% else %}
+            Zgłoszenia zamknięte
+        {% endif %}
+    {% endif %}
+{% else %}
+    <p>Otwarte konkursy dla klas:</p>
+    {% for konkursy_lista in konkursy_lista %}
+        <ul>
+        <li>{{konkursy_lista}}</li>
+        </ul>
+    {% endfor %}
+    Aby się zgłosić musisz być zalogowany
+{% endif %}
+</p>
+
+{% comment %}
+<p><em>--- Sekcja lista zgłoszonych zawodników ---</em></p>  
+{% regroup zgloszenia_lista by konkurs as sort_by_konkurs %}
+    {% for konkurs in sort_by_konkurs %}
+    <b>Konkurs: {{ konkurs.grouper }}</b>
+    <ol>
+    {% for zgloszenia_lista in konkurs.list %}
+        <li>{{zgloszenia_lista.zawodnik}}</li>
+    {% endfor %}
+    </ol>
+    {% endfor %}  
+
+<p><em>--- Koniec skcji lista zgłoszonych zawodników ---</em></p>
+{% endcomment %}
+{% endblock %}
+
+
+
+
+
