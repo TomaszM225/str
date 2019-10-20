@@ -1,3 +1,4 @@
+from datetime import datetime 
 from django.shortcuts import render, get_object_or_404, get_list_or_404
 # from django.shortcuts import render, get_object_or_404, redirect, get_list_or_404 
 from django.http import HttpResponse
@@ -5,10 +6,11 @@ from kegle_pl.models import Artykul, Przepisy, Programy, Instytucje, Oplaty, Kla
 
 
 def index(request): #Widok strony głównej
-    """Strona główna generuje ogłoszenia ze statusem wszyscy i
-    listę linków do zawodów ze statusem 1 - otwarte_dla_zgl , 2-zablokowane_dla_zgl, 3- odbywajace_sie"""
+    """Strona główna generuje ogłoszenia ze statusem wszyscy i listę linków do 
+    zawodów ze statusem 1 - otwarte_dla_zgl , 2-zablokowane_dla_zgl, 
+    3- odbywajace_sie. """
+    
     artykuly_glowna = Artykul.objects.filter(na_glownej=1).filter(status='o').order_by('kolejnosc_artykulu')
-    print("artyk  ",artykuly_glowna)
     zawody_rozgrywane = Zawody.objects.filter(status_zawodow=3).filter(status='o').order_by('data_rozpoczecia')
     zawody_otwarte = Zawody.objects.filter(status='o').exclude(status_zawodow=3).order_by('data_rozpoczecia')
     context = {
@@ -19,7 +21,10 @@ def index(request): #Widok strony głównej
     return render(request, 'kegle_pl/index.html', context=context)
 
 def przepisy(request):
-    """Lisata Przepisów i Programów"""
+    """Lisata linków do przepisów ze statusem opublikowany.Linki podzielone są 
+    na roczniki publikacji. Linki kierują na plik dokumentu w srtandardzie pdf. 
+    """
+    
     przepisy = Przepisy.objects.filter(status='o')
     context = {
         'przepisy':przepisy,
@@ -28,12 +33,15 @@ def przepisy(request):
 
 def przepisy_detail(request, pk): 
     """Widok do obsługi linków otwierającyhc pdf`a przepisów"""
+    
     plik = get_object_or_404(Przepisy, slug=pk)
     pdf_data=plik.path_plik.open(mode='rb')
     return HttpResponse(pdf_data, content_type = "application/pdf")
 
 def programy(request):
-    """Lisata Przepisów i Programów"""
+    """Lisata linków do programów ze statusem opublikowany. Linki kierują na plik 
+    dokumentu w srtandardzie pdf."""
+    
     programy = Programy.objects.filter(status='o')
     context = {
         'programy':programy,
@@ -106,10 +114,6 @@ def zawody_rozgrywane_detail(request, pk):
         text = ZawodyKomunikaty.objects.filter(zawody_id=pk)
     except ZawodyKomunikaty.DoesNotExist:
         text = 'none'
-#     if not request.user.is_authenticated:
-#         konkursy_lista = Konkursy.objects.filter(zawody = pk)
-#         zgloszenia_lista = Zgloszenia.objects.filter(zawody = pk)
-#         zgloszenia_lista = "To będzie skrucona lista zgłoszeń"
     context = {
                'text':text,
                'zawodyInstancja':zawodyInstancja,

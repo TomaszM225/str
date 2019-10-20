@@ -1,6 +1,6 @@
 # TODO: tom/tom@kegle.pl/tom12345
 from django.db import models
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import User, Group 
 from django.utils import timezone
 import datetime
 from django.urls import reverse
@@ -19,17 +19,14 @@ def dokumenty_directory_path(instance, filename):
     Pliki będą ładowane do MEDIA_ROOT/<rodzaj>/<rok>/<filename>"""
     
     if isinstance(instance, Przepisy):
-        print("instancja przepisy",instance)
         return 'przepisy/{0}/{1}'.format(datetime.datetime.now().strftime ("%Y"), filename)
     if isinstance(instance, Programy):
-        print("instancja programy",instance)
         return 'programy/{0}/{1}'.format(datetime.datetime.now().strftime ("%Y"), filename)
+
 class Wpis(models.Model):
-    """ Wpis podstawowa jednostka na portalu. Wpisem może być 
-        Artykół - strona z jakimś tekstem dotyczącym userów,
-        Ogłoszenie - info dotyczące zawodów, 
-        Zawody - zestaw informacji dotycząca zawodów, 
-        Reklama. Jest w formie strony www. """
+    """ Wpis podstawowa jednostka na portalu. Wpisem może być Artykół - strona 
+    z jakimś tekstem dotyczącym userów, Zawody - zestaw informacji dotycząca 
+    zawodów, Reklama. Dokument - wpis kierujący do dokumentu w formacie pdf. """
     
     WYBOR_STATUSU = (
     ('r', 'Roboczy'),
@@ -37,10 +34,10 @@ class Wpis(models.Model):
     ('a', 'Archiwalny'),
     )
     WYBOR_KATEGORII = (
-    ('doc', 'Dokument'),
+    ('art', 'Artykuł'),
     ('zawody', 'Zawody'),
     ('reklama', 'Reklama'),
-    ('ogloszenie', 'Ogłoszenie'),
+    ('doc', 'Dokument'),
     )
     tytul = models.CharField(max_length=250, help_text='Skrótowy tyuł wpisu')
     slug = models.SlugField(max_length=250, unique_for_date='opublikowany')
@@ -59,7 +56,8 @@ class Wpis(models.Model):
         return self.tytul
 
 class Artykul(Wpis):
-    """ Wpis artykuł dziedziczy pola wpisu i dodaje swoje """
+    """ Artykuł dziedziczy pola wpisu i dodaje swoje. Można ustawić czy jest na 
+    głównej  """
     
     tresc_artykulu = models.TextField('Treść artykułu', help_text='treść artykułu')
     aktualny_do = models.DateTimeField('Do daty', blank=True, null=True, help_text=' po aktualny_do_daty nie ma być widzoczny')
@@ -74,20 +72,6 @@ class Artykul(Wpis):
         nazwa_z_wpisu = Wpis.objects.get(pk=self.pk)
         return '%s'  'kolejnosc  ' '%s' % (nazwa_z_wpisu.tytul, self.kolejnosc_artykulu)
 
-class Ogloszenie(Wpis):
-    """ Ogłoszeni organizatora, biura zawodów, lub admina, dotyczące zawodów. """
-    
-    tresc_ogloszenia = models.TextField('Treść ogłoszenia', help_text='treść ogłoszenia')
-    aktywne_do = models.DateTimeField(null=True)
-    
-    class Meta:
-            db_table = 'n_ogloszenia'
-            verbose_name_plural = "Ogłoszenia"
-
-    def __str__(self):
-        nazwa_z_wpisu = Wpis.objects.get(pk=self.pk)
-        return str(nazwa_z_wpisu.tytul)
-    
 class Instytucje(models.Model):
     """ Instytucje - Organizator zawodów, Klub, Federacja, Reklamodawca -
     np. skelp internetowy. """
@@ -246,8 +230,8 @@ class Konkursy(models.Model):
         return '%s' %(self.klasy)
     
 class Przepisy(Wpis):
-    """ Przepisy  kopiowane do katalogu /przepisy/ z podziałem na lata dodania.
-    Pliki format PDF. """
+    """ Przepisy wpis typu doc, kopiowane do katalogu /przepisy/ z podziałem na 
+    lata dodania. Pliki format PDF. """
 
     opis_tresci = models.CharField(max_length=250, null=True, help_text='Skrótowo co zawiera treść przepisu/programu')
     obowiazuje_od = models.DateField(help_text='Początek obowiązywania')
@@ -262,8 +246,9 @@ class Przepisy(Wpis):
         return '%s'' obowiązuje od ' '%s' % (self.tytul, self.obowiazuje_od)
 
 class Programy(Wpis):
-    """ Programy  kopiowane do katalogu /programy/ z podziałem na lata dodania.
-    Pliki format PDF. """
+    """ Programy wpis typu doc, kopiowane do katalogu /programy/ z podziałem na 
+    lata dodania. Pliki format PDF. """
+    
 #TODO: Zrobić tak by klase można bło filtrowac
     opis_tresci = models.CharField(max_length=250, null=True, help_text='Skrótowo co zawiera treść przepisu/programu')
     klasa_id = models.ForeignKey(Klasy, on_delete=models.CASCADE, related_name='DlaKlasy')
@@ -278,3 +263,84 @@ class Programy(Wpis):
     
     def __str__(self):
         return '%s'' obowiązuje od ' '%s' % (self.tytul, self.obowiazuje_od)
+
+class Kraje(models.Model):
+    nazwa_kraju = models.CharField(max_length=250,help_text='nazwa kraju')
+    kod_kraju = models.CharField(max_length=5,help_text='kod kraju')
+    flaga_img = models.ImageField(upload_to='flagi/',null=True)
+    nazwa_kraju_uk = models.CharField(max_length=250,help_text='nazwa kraju po angielsku')
+    
+    class Meta:
+        db_table = 'n_kraje'
+        verbose_name_plural = "Kraje"
+    
+    def __str__(self):
+        return self.nazwa_kraju  
+
+class Zawodnik(models.Model):
+    """Dane zawodnika """
+    
+    imie = models.CharField(max_length=255)
+    nazwisko = models.CharField(max_length=255)
+    data_urodzenia = models.DateField()
+    nr_pzj = models.CharField(max_length=255, blank=True, null=True)
+    fei_id = models.CharField(max_length=255, blank=True, null=True)
+    nazwa_klubu = models.CharField(max_length=255, blank=True, null=True)
+    e_mail = models.EmailField(max_length=254, blank=True, null=True)
+    telefon = models.CharField(max_length=255, blank=True, null=True)
+    kraj_zawodnika = models.ForeignKey(Kraje, on_delete=models.CASCADE, related_name='KrajZawodnika')
+    edycja_danych = models.BooleanField(default=False, help_text='Otworzyć do edycji zaznaczone NIE(0), odznaczone TAK(1)')
+    del_zawodnika = models.BooleanField(default=False, help_text='Kasować zawodnika zaznaczone NIE (0), odznaczone TAK(1)')
+    
+    class Meta:
+        db_table = 'n_zawodnik'
+        verbose_name_plural = "Zawodnicy"
+    
+    def __str__(self):
+        return '%s'' ' '%s' % (self.nazwisko, self.imie)
+
+class Konie(models.Model):
+    """ Koń jaki jest kazdy widzi """
+    WYBOR_PLEC = (
+    (1,'ogier'),
+    (2,'klacz'),
+    (3,'wałach'),
+    )
+    WYBOR_RODZAJ_KONIA = (
+    (1,'duży koń'),
+    (2,'mały koń/pony'),
+    (3,'kuc'),
+    )
+    poprawiony = models.DateTimeField(auto_now=True)
+    nazwa_konia = models.CharField('nazwa_konia',max_length=255,  help_text='nazwa123')
+    rasa = models.CharField(max_length=255, blank=True, null=True, help_text='Rasa konia',)
+    plec = models.PositiveIntegerField(choices=WYBOR_PLEC, help_text='Płeć konia')
+    masc = models.CharField(max_length=255, blank=True, null=True)
+    rodzaj = models.PositiveIntegerField(choices=WYBOR_RODZAJ_KONIA, help_text='Rodzaj konia')
+    data_urodzenia_konia = models.DateField()
+    ojciec = models.CharField(max_length=255, help_text='Nazwa ojca konia',null=True)
+    matka = models.CharField(max_length=255,  help_text='Nazwa matki konia',null=True)
+    ojciec_matki = models.CharField(max_length=255, help_text='Nazwa ojca matki konia',null=True)
+    wlasciciel = models.CharField(max_length=255, help_text='Właściciel konia',null=True)
+    hodowca_konia = models.CharField(max_length=255, help_text='Hodowca konia',null=True)
+    nr_pzj = models.CharField(max_length=255, blank=True, null=True)
+    nr_chipa_konia = models.CharField(max_length=255, blank=True, null=True)
+    fei_id_konia = models.CharField(max_length=255, blank=True, null=True)
+    nr_paszportu_pzj = models.CharField(max_length=255, blank=True, null=True)
+    nr_paszportu_fei = models.CharField(max_length=255, blank=True, null=True)
+    nr_paszportu_pzhk = models.CharField(max_length=255, help_text='Nr paszportu PZHK',null=True)
+    #instytucja będąca właścicielem konia
+    instytucja_konia = models.ForeignKey(Instytucje, on_delete=models.CASCADE, blank=True, null=True, related_name='KonInstytucje')
+    zawodnik_konia = models.ForeignKey(Zawodnik, on_delete=models.CASCADE,blank=True, null=True, related_name='KonZawodnik')
+    kasowac_zapis_konia = models.BooleanField(default=False, help_text='Kasować konia odznaczone NIE (kasaować) , zaznaczone TAK (kasować)')
+    kraj_urodzenia_konia = models.ForeignKey(Kraje, on_delete=models.CASCADE, related_name='KrajUrodzeniaKonia')
+
+    class Meta:
+        db_table = 'n_konie'
+        verbose_name_plural = "Konie"
+
+    def __str__(self):
+        return '%s' %(self.nazwa_konia)
+
+
+

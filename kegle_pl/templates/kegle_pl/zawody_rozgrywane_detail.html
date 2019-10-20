@@ -5,7 +5,10 @@
 <h3><img src="{{ zawodyInstancja.logo_zawodow.url }}" alt="Logo" height="80" width="80">   {{ zawodyInstancja.oficjalna_nazwa }}</h3>
 <p><em>--- Sekcja ogłoszenie ---</em>
     {% if text %}
-        <p>{% autoescape off %}{{ text.komunikat }}{% endautoescape %}</p>
+    	{% for text in text %}
+    		{{ text.data_czas_komunikatu }} <br/>
+        	<p>{% autoescape off %}{{ text.komunikat }}{% endautoescape %}</p>
+       	{% endfor %}
     {% else %}
         <p>Brak aktywnych komunikatów.</p>
     {% endif %}
