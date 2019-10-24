@@ -386,5 +386,64 @@ class Konie(models.Model):
     def __str__(self):
         return '%s' %(self.nazwa_konia)
 
+class Zgloszenia(models.Model):
+    """Zgłoszenia do zawodów z nich będzie generowana lista na przegląd
+    i dalej lista startujących zawodników w zawodach wraz z końmi. Pole 
+    zamowienia_indeks do sprawdzenia czy idea ma sens jeśli tak to tabela 
+    Zamówienia moze zniknąć. """
+    
+    WYBOR_STATUSU_ZGLOSZENIA = (
+    ('z','zatwierdzone'),
+    ('o','oczekujące'),
+    ('c','czeka na płatność'),
+    ('u','uzupełnić dane'),
+    )
+    utworzone = models.DateTimeField(default=timezone.now)
+    poprawiony = models.DateTimeField(auto_now=True)
+    zglaszajacy = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='ZglaszajacyDoZawodow')
+    konkurs = models.ForeignKey(Konkursy, on_delete=models.CASCADE, related_name='ZgloszeniaKonkursy')
+    zawodnik = models.ForeignKey(Zawodnicy, on_delete=models.CASCADE, related_name='ZgloszeniaZawodnik',null=True)
+    notka = models.TextField(blank=True, null=True)
+    status_zgloszenia = models.CharField(max_length=1,choices=WYBOR_STATUSU_ZGLOSZENIA, default = "o", help_text='ststus zgłoszenia')
+    zaplacil = models.DecimalField(max_digits=8, decimal_places=2, blank=True, null=True)
+    del_zgloszenie = models.BooleanField(default=False, help_text='Kasować zgłoszenie zaznaczone NIE (0), odznaczone TAK(1)')
+#     zamowienia_index = models.CharField(max_length=250, help_text='2/3/1/0 co oznaczało by zgodnie z tabela Opłat poszczególne kolumny')
+
+    class Meta:
+        db_table = 'n_zgloszenia'
+        verbose_name_plural = "Zgłoszenia"
+        
+    def __str__(self): #napisać kod pokazujący instytucje i zawodnika
+        return '%s'' (''%s'')' %(self.konkurs, self.utworzone.strftime('%m/%d/%Y'))
+    
+    def get_absolute_url(self):
+        """Returns the url to access a particular instance of MyModelName."""
+        return reverse('lista_zgloszen', args=[str(self.id)])
+
+class ZgloszoneKonie(models.Model): # lista koni zgłoszona do zawodów
+    utworzone = models.DateTimeField(default=timezone.now)
+    poptawiono = models.DateTimeField(auto_now=True)
+    kon = models.ForeignKey(Konie, on_delete=models.CASCADE, related_name='ZgloszeneKonieLista')
+    zgloszenie = models.ForeignKey(Zgloszenia, on_delete=models.CASCADE, related_name='ZgloszeneKonieZgloszenia')
+    nr_konia = models.CharField(max_length=100, help_text = 'indywidualny nr konia związany z zawodami np nr zgłoszenia+A, B, C, D itd')
+    przeglad = models.BooleanField(default=False, help_text='zaznaczone NIE (0), odznaczone TAK(1)')
+    
+    class Meta:
+        db_table = 'n_zgloszone_konie'
+    
+    def __str__(self):
+        return str(self.kon)
+    
+    def get_absolute_url(self):
+        """Returns the url to access a particular instance of MyModelName."""
+        return reverse('lista_zglosznych_koni', args=[str(self.id)])
+    
+
+
+
+
+
+
+
 
 
