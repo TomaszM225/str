@@ -2,7 +2,7 @@ from datetime import datetime
 from django.shortcuts import render, get_object_or_404, get_list_or_404
 # from django.shortcuts import render, get_object_or_404, redirect, get_list_or_404 
 from django.http import HttpResponse
-from kegle_pl.models import Artykul, Przepisy, Programy, Instytucje, Oplaty, Klasy, Konkursy, Zawody,  ZawodyKomunikaty
+from kegle_pl.models import Artykuly, Przepisy, Programy, Instytucje, Oplaty, Klasy, Konkursy, Zawody,  ZawodyKomunikaty
 
 
 def index(request): #Widok strony głównej
@@ -10,7 +10,7 @@ def index(request): #Widok strony głównej
     zawodów ze statusem 1 - otwarte_dla_zgl , 2-zablokowane_dla_zgl, 
     3- odbywajace_sie. """
     
-    artykuly_glowna = Artykul.objects.filter(na_glownej=1).filter(status='o').order_by('kolejnosc_artykulu')
+    artykuly_glowna = Artykuly.objects.filter(na_glownej=1).filter(status='o').order_by('kolejnosc_artykulu')
     zawody_rozgrywane = Zawody.objects.filter(status_zawodow=3).filter(status='o').order_by('data_rozpoczecia')
     zawody_otwarte = Zawody.objects.filter(status='o').exclude(status_zawodow=3).order_by('data_rozpoczecia')
     context = {

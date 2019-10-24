@@ -27,18 +27,17 @@ class ArtykulAdminForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
     
     class Meta:
-        model = Artykul
+        model = Artykuly
         fields = '__all__'
 
-class ArtykulAdmin(admin.ModelAdmin):
+class ArtykulyAdmin(admin.ModelAdmin):
     list_display = ('tytul', 'status', 'poprawiony',  'na_glownej', 'kolejnosc_artykulu')
     prepopulated_fields = {'slug': ('tytul',)}
     form = ArtykulAdminForm
     
 class PrzepisyAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('tytul',)}
-    
-    
+     
 class ProgramyAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('tytul',)}
     
@@ -62,12 +61,14 @@ class ZawodyKomunikatyAdmin(admin.ModelAdmin):
     form = ZawodyKomunikatyAdminForm
     
     
-admin.site.register(Artykul, ArtykulAdmin)
+admin.site.register(Artykuly, ArtykulyAdmin)
 admin.site.register(Przepisy,PrzepisyAdmin)
 admin.site.register(Programy,ProgramyAdmin)
 admin.site.register(Zawody, ZawodyAdmin)
 admin.site.register(Oplaty)
 admin.site.register(Instytucje)
+admin.site.register(UserInstytucji)
 admin.site.register(Konkursy)
 admin.site.register(Klasy)
 admin.site.register(ZawodyKomunikaty,ZawodyKomunikatyAdmin)
+admin.site.register(Zawodnicy)
