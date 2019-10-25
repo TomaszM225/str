@@ -175,11 +175,11 @@ class Klasy(models.Model):
     (4,'czwórki'),
     )
     RODZAJ_KLASY = (
-    (1, 'krajowe'),
-    (2, 'miedzynarodowe'),
-    (3, 'amatorskie'),
+    (1, 'krajowa'),
+    (2, 'miedzynarodowa'),
+    (3, 'amatorskia'),
     )
-    nazwa_klasy = models.CharField(max_length=255, blank=True, null=True)
+    nazwa_klasy = models.CharField(max_length=55, help_text = 'np. L-1 ')
     kategoria_klasy = models.PositiveIntegerField(choices=KATEGORIA, help_text='startująca ilosc konii c-2 -> 2')
     rodzaj_klasy = models.PositiveIntegerField(choices=RODZAJ_KLASY, help_text='wybor rodzaju klasy ')
     oplata_antydopingowa = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True)
@@ -192,7 +192,7 @@ class Klasy(models.Model):
         ordering = ('rodzaj_klasy',)
         
     def __str__(self):
-        return self.nazwa_klasy
+        return '%s'' - ''%s' %(self.nazwa_klasy, self.opis_klasy)
 
 class RodzajeKonkursow(models.Model):
     """Rodzaj konkursów odbywające się na zawodach np. Krajowe, Międzynarodowe, 
@@ -314,7 +314,7 @@ class Konkursy(models.Model):
         verbose_name_plural = "Konkursy"
         
     def __str__(self):
-        return '%s''  ' '%s' %(self.klasa, self.zawody.tytul)
+        return '%s' %(self.klasa)
     
 class Zawodnicy(models.Model):
     """Dane zawodnika """
@@ -437,7 +437,7 @@ class ZgloszoneKonie(models.Model): # lista koni zgłoszona do zawodów
     def get_absolute_url(self):
         """Returns the url to access a particular instance of MyModelName."""
         return reverse('lista_zglosznych_koni', args=[str(self.id)])
-    
+
 
 
 

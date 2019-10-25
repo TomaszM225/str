@@ -3,7 +3,7 @@
 {% block content %}
 <h3>Zawody rozgrywane detai</h3>
 <h3><img src="{{ zawodyInstancja.logo_zawodow.url }}" alt="Logo" height="80" width="80">   {{ zawodyInstancja.oficjalna_nazwa }}</h3>
-<p><em>--- Sekcja ogłoszenie ---</em>
+<p><em>--- Sekcja ogłoszenie ---</em><br/>
     {% if text %}
     	{% for text in text %}
     		{{ text.data_czas_komunikatu }} <br/>

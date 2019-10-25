@@ -1,0 +1,19 @@
+{% extends "kegle_pl/base_generic.html" %}
+
+{% block content %}
+
+<h1>Strona Artykuły </h1>
+<p><em>--- Sekcja artykuły ---</em></p>
+    {% for artykuly in artykuly %}
+        <h3><p>{{ artykuly.tytul }}</p></h3>
+        <em>Do zrobienia: widoczny skrót + link do treści<br/>
+        lub widoczny skrót i rozwijalna treść <br>
+        do sprawdzenia na żywej stronie</em>
+        <p>{% autoescape off %}{{ artykuly.tresc_artykulu }}{% endautoescape %}</p>
+    {% endfor %}
+<p><em>--- Koniec sekcji artykuł ---</em></p>
+<p><em>--- Sekcji lista artykuły wymagające zalogowania ---</em></p>
+    
+<p><em>--- Koniec sekcji lista artykuły wymagające zalogowania ---</em></p>
+
+{% endblock %}

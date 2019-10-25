@@ -50,7 +50,7 @@
 {% endif %}
 </p>
 
-{% comment %}
+
 <p><em>--- Sekcja lista zgłoszonych zawodników ---</em></p>  
 {% regroup zgloszenia_lista by konkurs as sort_by_konkurs %}
     {% for konkurs in sort_by_konkurs %}
@@ -63,7 +63,7 @@
     {% endfor %}  
 
 <p><em>--- Koniec skcji lista zgłoszonych zawodników ---</em></p>
-{% endcomment %}
+
 {% endblock %}
 
 

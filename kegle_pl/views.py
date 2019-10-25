@@ -1,4 +1,4 @@
-from datetime import datetime 
+# from datetime import datetime 
 from django.shortcuts import render, get_object_or_404, get_list_or_404
 # from django.shortcuts import render, get_object_or_404, redirect, get_list_or_404 
 from django.http import HttpResponse
@@ -55,6 +55,14 @@ def programy_detail(request, pk):
     pdf_data=plik.plik_opis.open(mode='rb')
     return HttpResponse(pdf_data, content_type = "application/pdf")
 
+def artykuly(request):
+    """Lista artykułów """
+    artykuly = Artykuly.objects.filter(na_glownej=0).filter(status='o')
+    context = {
+        'artykuly':artykuly,
+    }
+    return render(request, 'kegle_pl/artykuly.html', context=context)
+
 def arch_programow_przepisow(request):
     """ Widok programów i przepisów  w archiwum """
     # TODO: Napisac obsługę
@@ -101,7 +109,7 @@ def zawody_aktywne_detail(request, pk):
                'text':text,
                'zawodyInstancja':zawodyInstancja,
                'konkursy_lista':konkursy_lista,
-#             'zgloszenia_lista':zgloszenia_lista,
+#                'zgloszenia_lista':zgloszenia_lista,
     }
         
     return render(request, 'kegle_pl/zawody_aktywne_detail.html',  context=context)
