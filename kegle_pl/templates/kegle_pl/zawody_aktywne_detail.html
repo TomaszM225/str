@@ -32,9 +32,9 @@
         <p><h3><b>Zgłoszenie </b></h3></p>
         {% if zawodyInstancja.status_zawodow == 1 %}
             <em>to będzie link do konkursów do których mozna się dopisać</em>
-            {% comment %}
+{% comment %}
             <p><a href="{% url 'zgloszenia_dodaj' pk=zawodyInstancja.pk %}" >Zgłoszenie do {{zawodyInstancja.oficjalna_nazwa}} </a></p>
-        	{% endcomment %}
+{% endcomment %}
         {% else %}
             Zgłoszenia zamknięte
         {% endif %}

@@ -1,9 +1,30 @@
 # from datetime import datetime 
-from django.shortcuts import render, get_object_or_404, get_list_or_404
-# from django.shortcuts import render, get_object_or_404, redirect, get_list_or_404 
+from django.shortcuts import render, redirect, get_object_or_404, get_list_or_404
 from django.http import HttpResponse
-from kegle_pl.models import Artykuly, Przepisy, Programy, Instytucje, Oplaty, Klasy, Konkursy, Zawody,  ZawodyKomunikaty
+from django.contrib.auth.decorators import login_required, user_passes_test
+from kegle_pl.models import Artykuly, Przepisy, Programy, Instytucje, Oplaty, \
+        Klasy, Konkursy, Zawody,  ZawodyKomunikaty, Zgloszenia
 
+
+def group_required(*group_names): 
+    """Sprawdzenie zalogowanego user`a czy jest w odpwoeidniej grupie lub superuserem."""    
+    
+    def in_groups(u):       
+        if u.is_authenticated:            
+            if bool(u.groups.filter(name__in=group_names)) | u.is_superuser:
+                return True        
+            return False    
+    return user_passes_test(in_groups)
+
+def login_success(request): 
+    """ Po zalogowaniu przeniesie usera do właściwej strony głównej
+    """
+    if request.user.groups.filter(name='zawodnicy').exists():
+        return redirect('zawodnicy_index')
+    elif request.user.groups.filter(name='klub').exists():
+        return redirect('stowarzyszenia_index')
+    else:
+        return redirect('index')
 
 def index(request): #Widok strony głównej
     """Strona główna generuje ogłoszenia ze statusem wszyscy i listę linków do 
@@ -100,16 +121,15 @@ def zawody_aktywne_detail(request, pk):
     except ZawodyKomunikaty.DoesNotExist:
         text = 'none'
     konkursy_lista = Konkursy.objects.filter(zawody = pk)
-    print("lista konkursów",konkursy_lista)
-#     if not request.user.is_authenticated:
-#         konkursy_lista = Konkursy.objects.filter(zawody = pk)
+    if not request.user.is_authenticated:
+        konkursy_lista = Konkursy.objects.filter(zawody = pk)
 #         zgloszenia_lista = Zgloszenia.objects.filter(zawody = pk)
 #         zgloszenia_lista = "To będzie skrucona lista zgłoszeń"
     context = {
                'text':text,
                'zawodyInstancja':zawodyInstancja,
                'konkursy_lista':konkursy_lista,
-#                'zgloszenia_lista':zgloszenia_lista,
+#                 'zgloszenia_lista':zgloszenia_lista,
     }
         
     return render(request, 'kegle_pl/zawody_aktywne_detail.html',  context=context)
@@ -125,7 +145,7 @@ def zawody_rozgrywane_detail(request, pk):
     context = {
                'text':text,
                'zawodyInstancja':zawodyInstancja,
-#             'konkursy_lista':konkursy_lista,
-#             'zgloszenia_lista':zgloszenia_lista,
+#                'konkursy_lista':konkursy_lista,
+#                'zgloszenia_lista':zgloszenia_lista,
     }
     return render(request, 'kegle_pl/zawody_rozgrywane_detail.html',  context=context)

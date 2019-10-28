@@ -26,29 +26,41 @@
 			  <li><a href="{% url 'artukuly' %}">Artykuly</a></li>
 			  <li><a href="{% url 'przepisy' %}">Przepisy</a></li>
 			  <li><a href="{% url 'programy' %}">Programy</a></li>
-			  {% comment %}
+{% comment %}
 			  <li><a href="{% url 'zawody_archiwum' %}">Archiwum</a></li>
-			  <li><a href="">InnyLink</a></li>
+			  <li><a href="">InnyLink1</a></li>
+{% endcomment %}
+
 			 {% if user.is_authenticated %}
 				<li>User: {{ user.get_username }} {{user.pk}}</li>
 				{% load user_tags %}
-					{% if request.user|has_group:"Zawodnicy" %}
+					
+					{% if request.user|has_group:"zawodnicy" %}
+						Menu "Zawodnicy"
+{% comment %}
 						<li><a href="{% url 'zawodnicy_index' %}">Główna Zawodnik</a></li>
 						<li><a href="{% url 'moje_konie_bryczki' %}">Moje dane</a></li>
+{% endcomment %}
 					{% endif %}
-					{% if request.user|has_group:"Stowarzyszenia" %}
+					{% if request.user|has_group:"klub" %}
+						Mnenu "Klub"
+{% comment %}
 						<li><a href="{% url 'stowarzyszenia_index' %}">Główna Stowarzyszenia</a></li>
 						<li><a href="{% url 'stowarzyszenia_konie_bryczki' %}">Moje dane</a></li>
+{% endcomment %}
 					{% endif %}
-					{% if request.user|has_group:"Organizatorzy" %}
-						<li><a href="">Główna Organizator</a></li>
+					{% if request.user|has_group:"organizator_admin" %}
+						Menu "Organizator admin"
+{% comment %}
+{% endcomment %}
 					{% endif %}
-				<li><a href="{% url 'logout'%}?next=/cms">Logout</a></li>
+				<li><a href="{% url 'logout'%}?next=/keglepl">Logout</a></li>
 			 {% else %}
-				<li><a href="{% url 'login'%}?next=/cms/login_success/">Login</a></li>   
+				<li><a href="{% url 'login' %}?next=/keglepl/login_success/">Login</a></li>   
 			 {% endif %} 
 			</ul>
-			{% endcomment %}
+				  
+		
 		  {% endblock %}
 		  </div>
 		  <div class="col-sm-10 ">{% block content %}{% endblock %}</div>

@@ -24,7 +24,7 @@
     {% endif %}
 <em>--- Koniec sekcji linku do propozycji ---</em>
 </p>
-{% comment %}
+
 <p><em>Sekcja linków do zgłoszeń</em>
 {% if user.is_authenticated or zawodyInstancja.status_zawodow == 2 %}
     {%if konkursy_lista == 'none' %}
@@ -60,6 +60,7 @@
     {% endfor %}  
 
 <p><em>--- Koniec skcji lista zgłoszonych zawodników ---</em></p>
+{% comment %}
 {% endcomment %}
 {% endblock %}
 
