@@ -2,7 +2,8 @@
 
 {% block content %}
 <h3><img src="{{ zawodyInstancja.logo_zawodow.url }}" alt="Logo" height="80" width="80">   {{ zawodyInstancja.oficjalna_nazwa }}</h3>
-<p><em>--- Sekcja ogłoszenie ---</em><br/>
+<p>
+<em>--- Sekcja komunikaty ---</em><br/>
     {% if text %}
     	{% for text in text %}
     		{{ text.data_czas_komunikatu }} <br/>
@@ -11,11 +12,10 @@
     {% else %}
         <p>Brak aktywnych komunikatów.</p>
     {% endif %}
-<em>--- Koniec sekcji ogłoszenie ---</em>
+<em>--- Koniec sekcji komunikaty ---</em>
 </p>
-
-
-<p><em>--- Sekcja linku do propozycji ---</em>
+<p>
+<em>--- Sekcja linku do propozycji ---</em>
     {% if zawodyInstancja.propozycje_plik %}
         <p><a href="{% url 'zawody_aktywne_propozycje' pk=zawodyInstancja.slug %}" target="_blank">Propozycje - {{zawodyInstancja.oficjalna_nazwa}} </a></p>
     {% else %}
@@ -23,18 +23,14 @@
     {% endif %}
 <em>--- Koniec sekcji linku do propozycji ---</em>
 </p>
-
-<p><em>Sekcja linków do zgłoszeń</em>
+<p><em>--- Sekcja linków do zgłoszeń ---</em>
 {% if user.is_authenticated or zawodyInstancja.status_zawodow == 2 %}
     {%if konkursy_lista == 'none' %}
     <p>Do zawodów zgłasza admin klubu</p>
     {% else %}
-        <p><h3><b>Zgłoszenie </b></h3></p>
+        <h3><b>Zgłoszenia </b></h3>
         {% if zawodyInstancja.status_zawodow == 1 %}
-            <em>to będzie link do konkursów do których mozna się dopisać</em>
-{% comment %}
-            <p><a href="{% url 'zgloszenia_dodaj' pk=zawodyInstancja.pk %}" >Zgłoszenie do {{zawodyInstancja.oficjalna_nazwa}} </a></p>
-{% endcomment %}
+		        <a href="{% url 'str_404' %}" >Formularz zgłoszenia </a>
         {% else %}
             Zgłoszenia zamknięte
         {% endif %}
@@ -49,9 +45,7 @@
     Aby się zgłosić musisz być zalogowany
 {% endif %}
 </p>
-
-
-<p><em>--- Sekcja lista zgłoszonych zawodników ---</em></p>  
+<em>--- Sekcja lista zgłoszonych zawodników ---</em></p>  
 {% regroup zgloszenia_lista by konkurs as sort_by_konkurs %}
     {% for konkurs in sort_by_konkurs %}
     <b>Konkurs: {{ konkurs.grouper }}</b>

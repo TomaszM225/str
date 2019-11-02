@@ -1,9 +1,10 @@
 {% extends "kegle_pl/base_generic.html" %}
 
 {% block content %}
-<h1>Przepisy ujeżdżeniowe</h1>
-<p><em>--- Sekcji lista przepisów ---</em></p>
-	{% if przepisy %}
+
+{% if przepisy %}
+	<h1>Przepisy zaprzęgowe</h1>
+	<p><em>--- Sekcji lista przepisów ---</em></p>
 		{% regroup przepisy by opublikowany|date:"Y" as sort_by_year %} 
 			{% for years in sort_by_year %}
 				<b>Rok ogłoszenia: {{ years.grouper }}</b>
@@ -16,9 +17,21 @@
 					{% endfor %}
 				</ul>
 			{% endfor %}
-	{% else %}
-		<p>Brak wpisów w liście przepisy.</p>
-	{% endif %}
 <p><em>--- Koniec sekcji lista przepisów ---</em></p>
+{% endif %}
+
+{% if programy %}
+	<h1>Programy ujeżdżeniowe</h1>
+	<p><em>--- Sekcji lista programów ---</em></p>
+		<ul>
+			{% for programy in programy %}
+				<li>
+					<a href="{% url 'programy_detail' pk=programy.slug %}">{{ programy.tytul }} </a><br/>
+					<em>Uwagi:</em>{{programy.opis_tresci}}<br/>	
+				</li>
+			{% endfor %}
+		</ul>
+<p><em>--- Koniec sekcji lista programów ---</em></p>	
+{% endif %}
 
 {% endblock %}

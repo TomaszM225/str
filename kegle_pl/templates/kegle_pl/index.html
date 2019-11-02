@@ -3,13 +3,13 @@
 {% block content %}
 
 <h1>Strona Index</h1>
-<p><em>--- Sekcja artykuły ---</em></p>
+<p><em>--- Sekcja artykuły na stronie głównej---</em></p>
     {% for artykuly_glowna in artykuly_glowna %}
         <h3><p>{{ artykuly_glowna.tytul }}</p></h3>
         
         <p>{% autoescape off %}{{ artykuly_glowna.tresc_artykulu }}{% endautoescape %}</p>
     {% endfor %}
-<p><em>--- Koniec sekcji ogłoszenie ---</em></p>
+<p><em>--- Koniec sekcji artykły na stronie głównej ---</em></p>
 <p><em>--- Sekcji lista aktualnie rozgrywanych zawodów ---</em></p>
     {% if zawody_rozgrywane %}
     <ul>
@@ -31,7 +31,7 @@
             {% if zawody_otwarte.status_zawodow == 1 %}
             <a href="{% url 'zawody_aktywne_detail' pk=zawody_otwarte.pk  %}"><img src="{{ zawody_otwarte.logo_zawodow.url }}" alt="Logo" height="40" width="40">  {{ zawody_otwarte.tytul }} ({{zawody_otwarte.data_rozpoczecia|date:"d/m/Y"}} - {{zawody_otwarte.data_zakonczenia|date:"d/m/Y"}})</a>
             {% else %}
-            <a href="{% url 'zawody_aktywne_detail' pk=zawody_otwarte.pk  %}"><img src="{{ zawody_otwarte.logo_zawodow.url }}" alt="Logo" height="40" width="40">  {{ zawody_otwarte.tytul }} ({{zawody_otwarte.data_rozpoczecia|date:"d/m/Y"}} - {{zawody_otwarte.data_zakonczenia|date:"d/m/Y"}})</a>zgłoszenia zamknięte <em>  (będzie grafka o zamknięciu</em>
+            <a href="{% url 'zawody_aktywne_detail' pk=zawody_otwarte.pk  %}"><img src="{{ zawody_otwarte.logo_zawodow.url }}" alt="Logo" height="40" width="40">  {{ zawody_otwarte.tytul }} ({{zawody_otwarte.data_rozpoczecia|date:"d/m/Y"}} - {{zawody_otwarte.data_zakonczenia|date:"d/m/Y"}})</a>zgłoszenia zamknięte <em>--- (będzie grafka o zamknięciu) ---</em>
             {% endif %}
         </li>
         {% endfor %}   
@@ -39,7 +39,6 @@
     {% else %}
         <p>Brak aktywnych zawodów.</p>
     {% endif %}
-
 
 <p><em>--- Koniec sekcji lista najbliższych zawodów ---</em></p>
 

@@ -3,8 +3,9 @@ from django.shortcuts import render, redirect, get_object_or_404, get_list_or_40
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required, user_passes_test
 from kegle_pl.models import Artykuly, Przepisy, Programy, Instytucje, Oplaty, \
-        Klasy, Konkursy, Zawody,  ZawodyKomunikaty, Zgloszenia
-
+        Klasy, Konkursy, Zawody,  ZawodyKomunikaty, Zgloszenia, UserInstytucji, \
+        Zawodnicy
+from kegle_pl.forms import KonForm, ZawodnikForm
 
 def group_required(*group_names): 
     """Sprawdzenie zalogowanego user`a czy jest w odpwoeidniej grupie lub superuserem."""    
@@ -21,10 +22,24 @@ def login_success(request):
     """
     if request.user.groups.filter(name='zawodnicy').exists():
         return redirect('zawodnicy_index')
-    elif request.user.groups.filter(name='klub').exists():
-        return redirect('stowarzyszenia_index')
+    elif request.user.groups.filter(name='klub_admin').exists():
+        return redirect('kluby_index')
     else:
         return redirect('index')
+
+def str_404(request):
+    """Błąd 404"""
+    txt = "Nie znalazłem strony"
+    context = {
+        'txt':txt,
+    }
+    return render(request, 'kegle_pl/str_404.html', context=context)
+
+def curent_user_ins(user):
+    """wybór instytucji dla zalogowanego usera"""
+    curent_user=UserInstytucji.objects.get(auth_user=user)
+    current_inst = Instytucje.objects.get(UserInstytucjiRelacja=curent_user.pk)
+    return( current_inst )
 
 def index(request): #Widok strony głównej
     """Strona główna generuje ogłoszenia ze statusem wszyscy i listę linków do 
@@ -50,7 +65,7 @@ def przepisy(request):
     context = {
         'przepisy':przepisy,
     }
-    return render(request, 'kegle_pl/przepisy.html', context=context)
+    return render(request, 'kegle_pl/doc.html', context=context)
 
 def przepisy_detail(request, pk): 
     """Widok do obsługi linków otwierającyhc pdf`a przepisów"""
@@ -67,7 +82,7 @@ def programy(request):
     context = {
         'programy':programy,
     }
-    return render(request, 'kegle_pl/programy.html', context=context)
+    return render(request, 'kegle_pl/doc.html', context=context)
 
 def programy_detail(request, pk): 
     """Widok do obsługi linków otwierającyhc pdf`a przepisów"""
@@ -86,7 +101,7 @@ def artykuly(request):
 
 def arch_programow_przepisow(request):
     """ Widok programów i przepisów  w archiwum """
-    # TODO: Napisac obsługę
+    # TODO: Napisac obsługę archiwum programów i przepisów
     pass
 
 def zawody_aktywne(request):
@@ -149,3 +164,47 @@ def zawody_rozgrywane_detail(request, pk):
 #                'zgloszenia_lista':zgloszenia_lista,
     }
     return render(request, 'kegle_pl/zawody_rozgrywane_detail.html',  context=context)
+
+@login_required
+@group_required('zawodnicy')
+def zawodnicy_index(request):
+    """Głóna strona dla główna dla zawodników. Zawodnik """
+    
+    zawodnik_ = Zawodnicy.objects.get(zawodnik=request.user.pk)
+    zawody_ = Zawody.objects.filter(status='o')
+    zgloszenia_ = Zgloszenia.objects.filter(zawodnik=zawodnik_.pk).filter(zawody_id__in=zawody_)
+    
+    context = {
+        'zaw':zawodnik_,
+        'zgloszenia':zgloszenia_,
+        'zawody':zawody_
+    }
+    
+    return render(request, 'kegle_pl/zawodnicy_index.html', context=context)
+
+def zawodnik_dane(request):
+    """Strna z danymi zawodnika, listą koni, linkami do edycji tych danych"""
+    
+    form = ZawodnikForm()
+    
+    return render(request, 'kegle_pl/zawodnicy_dodaj.html', {'form':form})
+
+@login_required
+@group_required('klub', 'klub_admin')
+#TODO: Napisać obsługę strony głównnj dla klubów
+def kluby_index(request):
+    """Główna strona dla klubbów obsługuje admin klubu. Ma w swpoich zasobach 
+     zawodników, konie które zgłasza do wybranych zawodów na zasadzie par 
+     zawodnik+lista_koni """
+    
+    zawodnik_ = "Zawodnik Test"
+    zawody_ = "Zawody Test"
+    zgloszenia_ = "Zgłoszenia Test"
+    
+    context = {
+        'zaw':zawodnik_,
+        'zgloszenia':zgloszenia_,
+        'zawody':zawody_
+    }
+    
+    return render(request, 'kegle_pl/zawodnicy_index.html', context=context)

@@ -401,6 +401,7 @@ class Zgloszenia(models.Model):
     utworzone = models.DateTimeField(default=timezone.now)
     poprawiony = models.DateTimeField(auto_now=True)
     zglaszajacy = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='ZglaszajacyDoZawodow')
+    zawody = models.ForeignKey(Zawody, on_delete=models.CASCADE, related_name='ZgloszeniaZawody')
     konkurs = models.ForeignKey(Konkursy, on_delete=models.CASCADE, related_name='ZgloszeniaKonkursy')
     zawodnik = models.ForeignKey(Zawodnicy, on_delete=models.CASCADE, related_name='ZgloszeniaZawodnik',null=True)
     notka = models.TextField(blank=True, null=True)

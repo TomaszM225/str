@@ -37,9 +37,11 @@
 					
 					{% if request.user|has_group:"zawodnicy" %}
 						Menu "Zawodnicy"
-{% comment %}
-						<li><a href="{% url 'zawodnicy_index' %}">Główna Zawodnik</a></li>
-						<li><a href="{% url 'moje_konie_bryczki' %}">Moje dane</a></li>
+
+						<li><a href="{% url 'zawodnicy_index' %}">Moje zgłoszenia</a></li>
+					
+						<li><a href="{% url 'zawodnik_dane' %}">Moje dane</a></li>
+{% comment %}	
 {% endcomment %}
 					{% endif %}
 					{% if request.user|has_group:"klub" %}
