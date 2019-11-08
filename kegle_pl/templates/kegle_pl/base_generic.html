@@ -2,71 +2,76 @@
 <html lang="en">
 <head>
 {% block title %}<title>TEST kegle.pl</title>{% endblock %}
-	<!-- Required meta tags -->
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<!-- css for Bootstrap 4 -->
-	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-	<!-- Add additional CSS in static file rozszerzenie bootstrapa -->
-	{% load static %}
-	<link rel="stylesheet" type="text/css" href="{% static 'kegle_pl/style.css' %}"> 
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- css for Bootstrap 4 -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <!-- Add additional CSS in static file rozszerzenie bootstrapa -->
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'kegle_pl/style.css' %}"> 
 </head>
-	<body>
-	<!-- JawaScript for Bootstrap 4 jQuery first, then Popper.js, then Bootstrap JS -->
-	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-	  <div class="container-fluid">
-	  <h1>Nagłówek stały strony</h1>
-		<div class="row">
-		  <div class="col-sm-2">
-		  {% block sidebar %}
-			<ul class="sidebar-nav">
-			  <li><a href="{% url 'index' %}">Główna</a></li>
-			  <li><a href="{% url 'artukuly' %}">Artykuly</a></li>
-			  <li><a href="{% url 'przepisy' %}">Przepisy</a></li>
-			  <li><a href="{% url 'programy' %}">Programy</a></li>
+    <body>
+    <!-- JawaScript for Bootstrap 4 jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+      <div class="container-fluid">
+      <h1>Nagłówek stały strony</h1>
+        <div class="row">
+          <div class="col-sm-2">
+          {% block sidebar %}
+            <ul class="sidebar-nav">
+              <li><a href="{% url 'index' %}">Główna</a></li>
+              <li><a href="{% url 'artukuly' %}">Artykuly</a></li>
+              <li><a href="{% url 'przepisy' %}">Przepisy</a></li>
+              <li><a href="{% url 'programy' %}">Programy</a></li>
 {% comment %}
-			  <li><a href="{% url 'zawody_archiwum' %}">Archiwum</a></li>
-			  <li><a href="">InnyLink1</a></li>
+              <li><a href="{% url 'zawody_archiwum' %}">Archiwum</a></li>
+              <li><a href="">InnyLink1</a></li>
 {% endcomment %}
 
-			 {% if user.is_authenticated %}
-				<li>User: {{ user.get_username }} {{user.pk}}</li>
-				{% load user_tags %}
-					
-					{% if request.user|has_group:"zawodnicy" %}
-						Menu "Zawodnicy"
+             {% if user.is_authenticated %}
+                <li>User: {{ user.get_username }}</li>
+                {% load user_tags %}
+                    
+                    {% if request.user|has_group:"zawodnicy" %}
+                        Menu "Zawodnicy"
 
-						<li><a href="{% url 'zawodnicy_index' %}">Moje zgłoszenia</a></li>
-					
-						<li><a href="{% url 'zawodnik_dane' %}">Moje dane</a></li>
-{% comment %}	
-{% endcomment %}
-					{% endif %}
-					{% if request.user|has_group:"klub" %}
-						Mnenu "Klub"
+                        <li><a href="{% url 'zawodnicy_index' %}">Moje zgłoszenia</a></li>
 {% comment %}
-						<li><a href="{% url 'stowarzyszenia_index' %}">Główna Stowarzyszenia</a></li>
-						<li><a href="{% url 'stowarzyszenia_konie_bryczki' %}">Moje dane</a></li>
+                        <li><a href="{% url 'zawodnik_dane' %}">Moje dane</a></li>
 {% endcomment %}
-					{% endif %}
-					{% if request.user|has_group:"organizator_admin" %}
-						Menu "Organizator admin"
+                        {% if request.user|zawodnik_edycja:1 %}
+                            <li><a href="{% url 'zawodnik_edytuj' %}">Edit dane</a></li>
+                        {% endif %}
+                    {% endif %}
+                    {% if request.user|has_group:"rejestracja" %}
+                        <li><a href="{% url 'zawodnik_dane' %}">Uzupełnij</a></li>
+                    {% endif %}
+                    {% if request.user|has_group:"klub" %}
+                        Mnenu "Klub"
+{% comment %}
+                        <li><a href="{% url 'stowarzyszenia_index' %}">Główna Stowarzyszenia</a></li>
+                        <li><a href="{% url 'stowarzyszenia_konie_bryczki' %}">Moje dane</a></li>
+{% endcomment %}
+                    {% endif %}
+                    {% if request.user|has_group:"organizator_admin" %}
+                        Menu "Organizator admin"
 {% comment %}
 {% endcomment %}
-					{% endif %}
-				<li><a href="{% url 'logout'%}?next=/keglepl">Logout</a></li>
-			 {% else %}
-				<li><a href="{% url 'login' %}?next=/keglepl/login_success/">Login</a></li>   
-			 {% endif %} 
-			</ul>
-				  
-		
-		  {% endblock %}
-		  </div>
-		  <div class="col-sm-10 ">{% block content %}{% endblock %}</div>
-		</div>
-	  </div>
-	</body>
+                    {% endif %}
+                <li><a href="{% url 'logout'%}?next=/keglepl">Logout</a></li>
+             {% else %}
+                <li><a href="{% url 'login' %}?next=/keglepl/login_success/">Login</a></li>   
+             {% endif %} 
+            </ul>
+                  
+        
+          {% endblock %}
+          </div>
+          <div class="col-sm-10 ">{% block content %}{% endblock %}</div>
+        </div>
+      </div>
+    </body>
 </html>

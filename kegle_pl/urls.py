@@ -16,6 +16,7 @@ urlpatterns = [
     path('artykuly', views.artykuly, name='artukuly'),
     path('zawodnicy', views.zawodnicy_index, name='zawodnicy_index'),
     path('zawodnik', views.zawodnik_dane, name='zawodnik_dane'),
+    path('edit', views.zawodnik_edytuj, name='zawodnik_edytuj'),
     path('kluby', views.kluby_index, name='kluby_index'),
     path('404', views.str_404, name='str_404')
 ]

@@ -321,7 +321,7 @@ class Zawodnicy(models.Model):
     
     instytucja_zawodnika = models.ForeignKey(Instytucje, on_delete=models.CASCADE, \
                                              blank=True, null=True, related_name='ZawodnikInstytucje')
-    zawodnik = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, \
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, \
                                         blank=True, null=True, related_name='ZawodnikID')                 
     imie = models.CharField(max_length=255)
     nazwisko = models.CharField(max_length=255)

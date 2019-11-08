@@ -6,6 +6,7 @@ from kegle_pl.models import Artykuly, Przepisy, Programy, Instytucje, Oplaty, \
         Klasy, Konkursy, Zawody,  ZawodyKomunikaty, Zgloszenia, UserInstytucji, \
         Zawodnicy
 from kegle_pl.forms import KonForm, ZawodnikForm
+#from aiohttp.client import request
 
 def group_required(*group_names): 
     """Sprawdzenie zalogowanego user`a czy jest w odpwoeidniej grupie lub superuserem."""    
@@ -24,6 +25,8 @@ def login_success(request):
         return redirect('zawodnicy_index')
     elif request.user.groups.filter(name='klub_admin').exists():
         return redirect('kluby_index')
+    elif request.user.groups.filter(name='rejestracja').exists():
+        return redirect('zawodnik_dane')
     else:
         return redirect('index')
 
@@ -165,12 +168,14 @@ def zawody_rozgrywane_detail(request, pk):
     }
     return render(request, 'kegle_pl/zawody_rozgrywane_detail.html',  context=context)
 
-@login_required
+@login_required()
 @group_required('zawodnicy')
 def zawodnicy_index(request):
-    """Głóna strona dla główna dla zawodników. Zawodnik """
+    """Głóna strona dla główna dla zawodników. Wyświtla aktualne zgłoszenie
+    do zawodów jako linki do edycji o ile nie zostaną zaakceptowane. """
     
-    zawodnik_ = Zawodnicy.objects.get(zawodnik=request.user.pk)
+    #zawodnik_ = get_object_or_404(Zawodnicy, user=request.user.pk)
+    zawodnik_ = Zawodnicy.objects.get(user_id=request.user.pk)
     zawody_ = Zawody.objects.filter(status='o')
     zgloszenia_ = Zgloszenia.objects.filter(zawodnik=zawodnik_.pk).filter(zawody_id__in=zawody_)
     
@@ -182,12 +187,47 @@ def zawodnicy_index(request):
     
     return render(request, 'kegle_pl/zawodnicy_index.html', context=context)
 
+@login_required()
+@group_required('zawodnicy')
+def zawodnik_edytuj(request):
+    """Strona dodania edycji danych zawodnika"""
+    #TODO: Napisać edycje/dodanie zawodnika
+    zawodnik_ = Zawodnicy.objects.get(user=request.user.pk)
+#     post = get_object_or_404(Zawodnicy, pk=pk)
+    if request.method == "POST":
+        form = ZawodnikForm(request.POST, instance=zawodnik_)
+        if form.is_valid():
+            form = form.save(commit=False)
+            form.save()
+            context = {
+                'post': zawodnik_,
+            }
+        return render(request, 'kegle_pl/zawodnicy_dodaj.html', context=context)
+    else:
+        form = ZawodnikForm(instance=zawodnik_)
+        return render(request, 'kegle_pl/zawodnicy_dodaj.html', {'form': form})
+
+#     dodaj_zawodnika = ZawodnikForm()
+#     return render(request, 'kegle_pl/zawodnicy_dodaj.html', {'form':dodaj_zawodnika})
+
+@login_required()
+@group_required('rejestracja')
 def zawodnik_dane(request):
-    """Strna z danymi zawodnika, listą koni, linkami do edycji tych danych"""
-    
-    form = ZawodnikForm()
-    
-    return render(request, 'kegle_pl/zawodnicy_dodaj.html', {'form':form})
+    """Strona z danymi zawodnika, listą koni, linkami do edycji tych danych"""
+    #TODO: Napisać obsługę zawodnik_dane
+    dodaj_dane_zawodnika_ = ZawodnikForm()
+    if request.method == "POST":
+        form = ZawodnikForm(request.POST)
+        if form.is_valid():
+            form = form.save(commit=False)
+            form.save()
+            # context = {
+                # 'post': dodaj_dane_zawodnika_,
+            # }
+        # return render(request, 'kegle_pl/zawodnicy_dodaj.html', context=context)
+    # else:
+        # form = ZawodnikForm(instance=dodaj_dane_zawodnika_)
+        # return render(request, 'kegle_pl/zawodnicy_dodaj.html', {'form': form})
 
 @login_required
 @group_required('klub', 'klub_admin')
