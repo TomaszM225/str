@@ -1,0 +1,25 @@
+{% extends "kegle_pl/base_generic.html" %}
+
+{% block content %}
+<h2>Witamy {{ user.last_name  }} </h2>
+{% if zawodnik_edytuj %}
+	<p>Włączono edycję niektórych parametrów.</p>
+		<form method="POST" class="post-form">{% csrf_token %}
+	        <table>
+	        {{ zawodnik_edytuj }}
+	        </table>
+	        <button type="submit" class="save btn btn-default">Zmień</button>
+	    </form>
+{% endif %}
+{% if zawodnik_dodaj %}
+   <p>Jest to pierwsze logowanie prosimy o uzupełnienie poniższych danych.<br/>
+   Pola wymagane: imię, nazwisko, data urodzenie.<br/>
+   Pózniej bedziesz mógł dodać konie i zgłaszać się do zawodów.</p>  
+		<form method="POST" class="post-form">{% csrf_token %}
+			<table>
+			{{ zawodnik_dodaj }}
+			</table>
+			<button type="submit" class="save btn btn-default">Zapisz</button>
+		</form>
+{% endif %}
+{% endblock %}

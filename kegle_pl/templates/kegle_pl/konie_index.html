@@ -1,0 +1,26 @@
+{% extends "kegle_pl/base_generic.html" %}
+
+{% block content %}
+    {% if user.is_authenticated %}
+        <h3>Lista koni</h3>
+        <p><em>--- Sekcji lista koni  ---</em></p>
+        {% if kon_lista %}
+            <ol>
+            {% for kon_lista in kon_lista %}
+            <li>
+                <a href="{% url 'kon_dane' pk=kon_lista.pk %}">{{ kon_lista.nazwa_konia }}</a>
+            </li>
+            {% endfor %}
+            </ol>
+        {% else %}
+            <p>Brak wprowadzonych koni.</p>
+        {% endif %}
+        <p><em>--- Koniec sekcji lista koni ---</em></p>
+
+        <button class="klasa buttonu" onclick="location.href='{% url 'kon_dodaj' %}'" type="button">Dodaj nowego konia</button>
+        <button type="button" class="klasa buttonu" value="go back!" onclick="history.go(-1)">Wróć</button>
+   
+        {% else %}
+            <li><a href="{% url 'login'%}?next={{request.path}}">Login</a></li>   
+    {% endif %} 
+{% endblock %}

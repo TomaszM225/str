@@ -15,8 +15,13 @@ urlpatterns = [
     path('programy/<slug:pk>/',views.programy_detail, name='programy_detail'),
     path('artykuly', views.artykuly, name='artukuly'),
     path('zawodnicy', views.zawodnicy_index, name='zawodnicy_index'),
-    path('zawodnik', views.zawodnik_dane, name='zawodnik_dane'),
+    path('detale', views.zawodnik_dane, name='zawodnik_dane'),
+    path('dodaj', views.zawodnik_dodaj, name='zawodnik_dodaj'),
     path('edit', views.zawodnik_edytuj, name='zawodnik_edytuj'),
     path('kluby', views.kluby_index, name='kluby_index'),
+    path('konie', views.konie_index, name='konie_index'),
+    path('kon/<int:pk>',views.kon_dane, name='kon_dane'),
+    path('kon/zmiana/<int:pk>', views.kon_edit, name='kon_edit'),
+    path('kon/dodaj', views.kon_dodaj, name='kon_dodaj'),
     path('404', views.str_404, name='str_404')
 ]

@@ -332,6 +332,7 @@ class Zawodnicy(models.Model):
     e_mail = models.EmailField(max_length=254, blank=True, null=True)
     telefon = models.CharField(max_length=255, blank=True, null=True)
     kraj_zawodnika = models.ForeignKey(Kraje, on_delete=models.CASCADE, related_name='KrajZawodnika')
+    data_edycji = models.DateTimeField(auto_now=True)
     edycja_danych = models.BooleanField(default=False, help_text='Otworzyć do edycji zaznaczone NIE(0), odznaczone TAK(1)')
     del_zawodnika = models.BooleanField(default=False, help_text='Kasować zawodnika zaznaczone NIE (0), odznaczone TAK(1)')
     
@@ -375,8 +376,9 @@ class Konie(models.Model):
     nr_paszportu_pzhk = models.CharField(max_length=255, help_text='Nr paszportu PZHK',null=True)
     #instytucja będąca właścicielem konia
     instytucja_konia = models.ForeignKey(Instytucje, on_delete=models.CASCADE, blank=True, null=True, related_name='KonInstytucje')
-    zawodnik_konia = models.ForeignKey(Zawodnicy, on_delete=models.CASCADE,blank=True, null=True, related_name='KonZawodnik')
+    user_konia = models.ForeignKey(Zawodnicy, on_delete=models.CASCADE,blank=True, null=True, related_name='KonZawodnik')
     kasowac_zapis_konia = models.BooleanField(default=False, help_text='Kasować konia odznaczone NIE (kasaować) , zaznaczone TAK (kasować)')
+    edycja_danych_konia = models.BooleanField(default=False, help_text='Otworzyć do edycji zaznaczone NIE(0), odznaczone TAK(1)')
     kraj_urodzenia_konia = models.ForeignKey(Kraje, on_delete=models.CASCADE, related_name='KrajUrodzeniaKonia')
 
     class Meta:

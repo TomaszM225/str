@@ -1,0 +1,26 @@
+{% extends "kegle_pl/base_generic.html" %}
+
+{% block content %}
+    <h2>|{{ user.last_name  }}|{{current_inst}}| </h2>
+    <h3>Dane konia: {{ post.nazwa_konia }}</h3>
+    <p>     <b>Rasa:</b> {{post.rasa}}<br>
+            <b>Płeć:</b>{{post.get_plec_display}}<br>
+            <b>Maść:</b>{{post.masc}}<br>
+            {{post.get_rodzaj_display}}<br>
+            <b>data urodzenia:</b> {{post.data_urodzenia_konia}}<br>
+            {{post.ojciec}}<br>
+            {{post.matka}}<br>
+            {{post.ojciec_matki}}<br>
+            {{post.wlasciciel}}<br>
+            {{post.hodowca_konia}}<br>
+            {{post.nr_pzj}}<br>
+            {{post.nr_chipa_konia}}<br>
+            {{post.fei_id_konia}}<br>
+            {{post.nr_paszportu_pzj}}<br>
+            {{post.nr_paszportu_fei}}<br>
+            {{post.nr_paszportu_pzhk}}<br>
+            {{post.kraj_urodzenia_konia}}<br>
+    </p>
+
+    <p><button class="klasa buttonu" onclick="location.href='{% url 'kon_edit' pk=post.pk %}'" type="button">Zmień dane konia</button></p>
+{% endblock %}

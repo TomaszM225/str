@@ -1,0 +1,39 @@
+{% extends "kegle_pl/base_generic.html" %}
+
+{% block content %}
+<h1>Zawodnicy Strona główna</h1>
+{% if zaw %}
+    <ul>
+    <li>
+        {{ zaw.nazwisko }}<br>
+    </li>
+    </ul>
+        {% else %}
+            <p>Brak wprowadzonych danych.</p>
+{% endif %}
+
+{% if zgloszenia %}
+
+    {% regroup zgloszenia by zawody as zawody_lista %} 
+        {% for zawody in zawody_lista %}
+            <img src="{{ zawody.grouper.logo_zawodow.url }}" alt="Logo" height="40" width="40">
+            <b>{{ zawody.grouper }}</b>
+            <ul>
+            {% for zgloszenia in zawody.list %}
+            <li>
+            {{ zgloszenia }} zgłoszenie id {{zgloszenia.pk}} {{zgloszenia.get_status_zgloszenia_display}}
+             {% comment %}
+                <a href="{% url 'zgloszenia_detail' pk=zgloszenia.pk %}"> {{ zgloszenia }} zgłoszenie id {{zgloszenia.pk}} {{zgloszenia.get_status_zgloszenia_display}}</a> 
+
+            {% endcomment %}
+            </li>
+            {% endfor %}
+            </ul>
+        {% endfor %}
+{% else %}
+    <p>Brak aktywnych zgłoszeń.</p>
+{% endif %}
+{% comment %}
+<a href="{% url 'zgloszenia_archiwum'  %}">Archiwum zgłoszeń</a>
+{% endcomment %}    
+{% endblock %}

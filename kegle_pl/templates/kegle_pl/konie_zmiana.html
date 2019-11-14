@@ -1,0 +1,17 @@
+{% extends "kegle_pl/base_generic.html" %}
+
+{% block content %}
+
+   <h2>Wprowadz dane nowego konia</h2>
+   
+  <h2> {{ user.last_name  }} </h2>
+  <h3>{{current_inst}}</h3>
+  
+    <form method="POST" class="post-form">{% csrf_token %}
+        <table>
+        {{ form }}
+        </table>
+        <button type="submit" class="save btn btn-default">Zapisz</button>
+    </form>
+
+{% endblock %}
