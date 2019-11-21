@@ -3,9 +3,9 @@ from django.shortcuts import render, redirect, get_object_or_404, get_list_or_40
 from django.http import HttpResponse, Http404
 from django.contrib.auth.models import Group, User
 from django.contrib.auth.decorators import login_required, user_passes_test
-from kegle_pl.models import Artykuly, Przepisy, Programy, Instytucje, Oplaty, \
+from kegle_pl.models import Artykuly, Przepisy, Programy, Instytucje, \
         Klasy, Konkursy, Zawody,  ZawodyKomunikaty, Zgloszenia, UserInstytucji, \
-        Zawodnicy, Konie
+        Zawodnicy, Konie, ZgloszoneKonie, OplatyGrupy, OplatyNazwy, OplatyCeny
 from kegle_pl.forms import KonForm, KonEditForm, ZawodnikForm, ZawodnikEditForm
 # from django.template.context_processors import request
 #from aiohttp.client import request
@@ -42,8 +42,8 @@ def str_404(request):
 
 def instytucja_usera(user):
     """wybór instytucji dla zalogowanego usera"""
-    curent_user=UserInstytucji.objects.get(auth_user=user)  # @UndefinedVariable
-    current_inst = Instytucje.objects.get(UserInstytucjiRelacja=curent_user.pk)  # @UndefinedVariable
+    curent_user=UserInstytucji.objects.get(auth_user=user)  
+    current_inst = Instytucje.objects.get(UserInstytucjiRelacja=curent_user.pk)  
     return( current_inst )
 
 def index(request): #Widok strony głównej
@@ -51,9 +51,9 @@ def index(request): #Widok strony głównej
     zawodów ze statusem 1 - otwarte_dla_zgl , 2-zablokowane_dla_zgl, 
     3- odbywajace_sie. """
     
-    artykuly_glowna = Artykuly.objects.filter(na_glownej=1).filter(status='o').order_by('kolejnosc_artykulu')  # @UndefinedVariable
-    zawody_rozgrywane = Zawody.objects.filter(status_zawodow=3).filter(status='o').order_by('data_rozpoczecia')  # @UndefinedVariable
-    zawody_otwarte = Zawody.objects.filter(status='o').exclude(status_zawodow=3).order_by('data_rozpoczecia')  # @UndefinedVariable
+    artykuly_glowna = Artykuly.objects.filter(na_glownej=1).filter(status='o').order_by('kolejnosc_artykulu')  
+    zawody_rozgrywane = Zawody.objects.filter(status_zawodow=3).filter(status='o').order_by('data_rozpoczecia')  
+    zawody_otwarte = Zawody.objects.filter(status='o').exclude(status_zawodow=3).order_by('data_rozpoczecia')  
     context = {
         'artykuly_glowna':artykuly_glowna,
         'zawody_rozgrywane':zawody_rozgrywane,
@@ -98,7 +98,7 @@ def programy_detail(request, pk):
 
 def artykuly(request):
     """Lista artykułów """
-    artykuly = Artykuly.objects.filter(na_glownej=0).filter(status='o')  # @UndefinedVariable
+    artykuly = Artykuly.objects.filter(na_glownej=0).filter(status='o')  
     context = {
         'artykuly':artykuly,
     }
@@ -116,7 +116,7 @@ def zawody_aktywne(request):
     # TODO: Na stronie na telefon powinno się robić tafelki zawodów do sprawdzenia
     
     zawody_otwarte_ = get_object_or_404(Zawody, status_zawodow='o')
-    zawody_rozgrywane_ = Zawody.objects.filter(status_zawodow=3).filter(status='o').order_by('data_rozpoczecia')  # @UndefinedVariable
+    zawody_rozgrywane_ = Zawody.objects.filter(status_zawodow=3).filter(status='o').order_by('data_rozpoczecia')  
     context = {
                'zawody_otwarte': zawody_otwarte_,
                'zawody_rozgrywane':zawody_rozgrywane_
@@ -137,12 +137,12 @@ def zawody_aktywne_detail(request, pk):
     
     zawodyInstancja = get_object_or_404(Zawody, pk=pk)
     try:
-        text = ZawodyKomunikaty.objects.filter(zawody_id=pk)  # @UndefinedVariable
-    except ZawodyKomunikaty.DoesNotExist:  # @UndefinedVariable
+        text = ZawodyKomunikaty.objects.filter(zawody_id=pk)  
+    except ZawodyKomunikaty.DoesNotExist: 
         text = 'none'
-    konkursy_lista = Konkursy.objects.filter(zawody = pk)  # @UndefinedVariable
+    konkursy_lista = Konkursy.objects.filter(zawody = pk)  
     if not request.user.is_authenticated:
-        konkursy_lista = Konkursy.objects.filter(zawody = pk)  # @UndefinedVariable
+        konkursy_lista = Konkursy.objects.filter(zawody = pk)  
 #         zgloszenia_lista = Zgloszenia.objects.filter(zawody = pk)
 #         zgloszenia_lista = "To będzie skrucona lista zgłoszeń"
     context = {
@@ -159,8 +159,8 @@ def zawody_rozgrywane_detail(request, pk):
     
     zawodyInstancja = get_object_or_404(Zawody, pk=pk)
     try:
-        text = ZawodyKomunikaty.objects.filter(zawody_id=pk)  # @UndefinedVariable
-    except ZawodyKomunikaty.DoesNotExist:  # @UndefinedVariable
+        text = ZawodyKomunikaty.objects.filter(zawody_id=pk)  
+    except ZawodyKomunikaty.DoesNotExist:  
         text = 'none'
     context = {
                'text':text,
@@ -177,9 +177,9 @@ def zawodnicy_index(request):
     do zawodów jako linki do edycji o ile nie zostaną zaakceptowane. """
     
     #zawodnik_ = get_object_or_404(Zawodnicy, user=request.user.pk)
-    zawodnik_ = Zawodnicy.objects.get(user_id=request.user.pk)  # @UndefinedVariable
-    zawody_ = Zawody.objects.filter(status='o')  # @UndefinedVariable
-    zgloszenia_ = Zgloszenia.objects.filter(zawodnik=zawodnik_.pk).filter(zawody_id__in=zawody_)  # @UndefinedVariable
+    zawodnik_ = Zawodnicy.objects.get(user_id=request.user.pk)  
+    zawody_ = Zawody.objects.filter(status='o')  
+    zgloszenia_ = Zgloszenia.objects.filter(zawodnik=zawodnik_.pk).filter(zawody_id__in=zawody_)  
     
     context = {
                'zaw':zawodnik_,
@@ -195,7 +195,7 @@ def zawodnik_dane(request):
     """Strona zawierające dane zawodnika, listę koni. Zawirać będzie przyciski 
     dodające konia, zmianę opisu itp. """
     
-    zawodnik_ = Zawodnicy.objects.get(user_id=request.user.pk)  # @UndefinedVariable
+    zawodnik_ = Zawodnicy.objects.get(user_id=request.user.pk)  
     
     context = {
                'post':zawodnik_,   
@@ -208,7 +208,7 @@ def zawodnik_dane(request):
 def zawodnik_edytuj(request):
     """Po nadaniu praw do edycji dla Zawodnika strona edycji danych zawodnika staje się aktywna"""
 
-    zawodnik_ = Zawodnicy.objects.get(user=request.user.pk)  # @UndefinedVariable
+    zawodnik_ = Zawodnicy.objects.get(user=request.user.pk)  
     if zawodnik_.edycja_danych == 0:
         if request.method == "POST":
             zawodnik_edit_form = ZawodnikEditForm(request.POST, instance=zawodnik_)
@@ -224,19 +224,22 @@ def zawodnik_edytuj(request):
         return render(request, 'kegle_pl/zawodnicy_zmiana.html', {'zawodnik_dodaj': zawodnik_dodaj_form})
        
 @login_required()
-# @group_required('rejestracja')
+@group_required('rejestracja')
 def zawodnik_dodaj(request):
-    """Rejestracja zawodnika i zamiana grupy """
-
+    """Rejestracja zawodnika i zamiana grupy 
+    *---------------------------------------------------------
+    * Trzeba napisać obsługę błędu jak juz istnieje zawodnik
+    *---------------------------------------------------------
+    """
     if request.method == "POST":
         zawodnik_dodaj_form = ZawodnikForm(request.POST)
         if zawodnik_dodaj_form.is_valid():
             zawodnik_dodaj_form = zawodnik_dodaj_form.save(commit=False)
             zawodnik_dodaj_form.user=request.user #wpisanie id usera
-            zawodnik_dodaj_form.save()
-            user_gr = User.groups.objects.get(user=request.user.pk)  # @UndefinedVariable
+            user_gr = User.groups.through.objects.get(user=request.user)
             grupa = Group.objects.get(name='zawodnicy')
             user_gr.group = grupa
+            zawodnik_dodaj_form.save()
             user_gr.save()
             return redirect('zawodnicy_index')
     else:
@@ -246,16 +249,16 @@ def zawodnik_dodaj(request):
 @login_required()
 @group_required('zawodnicy','klub_admin')
 def konie_index(request):
-    """Strona z listą koni. """
+    """Lista koni przypisanych do User`a. """
     
     if request.user.groups.filter(name='zawodnicy').exists():
         zawodnik = get_object_or_404(Zawodnicy, user=request.user.pk)
-        kon_lista = Konie.objects.filter(user_konia=zawodnik).filter(kasowac_zapis_konia=False)  # @UndefinedVariable
+        kon_lista = Konie.objects.filter(user_konia=zawodnik).filter(kasowac_zapis_konia=False)  
     else:
 #     if request.user.groups.filter(name='klub_admin').exists():
         print("Konie instytucji")
         instytucja=instytucja_usera(request.user.pk)
-        kon_lista = Konie.objects.filter(instytucja_konia=instytucja).filter(kasowac_zapis_konia=False)  # @UndefinedVariable
+        kon_lista = Konie.objects.filter(instytucja_konia=instytucja).filter(kasowac_zapis_konia=False)  
     context = {
                'kon_lista':kon_lista,
     }
@@ -267,7 +270,7 @@ def konie_index(request):
 def kon_dane(request, pk):
     """Strona daych konia z możliwością zamiany niektórych parametrów"""
 
-    kon_ = Konie.objects.get(pk=pk)  # @UndefinedVariable
+    kon_ = Konie.objects.get(pk=pk)  
     context = {
                'post': kon_,
     }
@@ -276,7 +279,7 @@ def kon_dane(request, pk):
 @login_required()
 @group_required('zawodnicy','klub_admin')
 def kon_edit(request, pk):
-    kon_do_zmiany = Konie.objects.get(pk=pk)  # @UndefinedVariable
+    kon_do_zmiany = Konie.objects.get(pk=pk)  
     if request.method == "POST":
             kon_dodaj_form = KonEditForm(request.POST, instance=kon_do_zmiany)
             if kon_dodaj_form.is_valid():
@@ -297,7 +300,7 @@ def kon_dodaj(request):
         if kon_dodaj_form.is_valid():
             kon_dodaj_form = kon_dodaj_form.save(commit=False)
             if request.user.groups.filter(name='zawodnicy').exists():
-                zawodnik = Zawodnicy.objects.get(user=request.user.pk)  # @UndefinedVariable
+                zawodnik = Zawodnicy.objects.get(user=request.user.pk)  
                 kon_dodaj_form.user_konia=zawodnik
                 kon_dodaj_form.save()
                 return redirect('zawodnicy_index')
@@ -310,23 +313,22 @@ def kon_dodaj(request):
         kon_dodaj_form = KonForm()
     return render(request, 'kegle_pl/konie_zmiana.html', {'form': kon_dodaj_form}) 
 
-#TODO: Napisać procedureę
-
 @login_required()
 @group_required('zawodnicy','klub_admin')
-def kasujKonia(request):
+def kon_kasuj(request):
+#TODO: Napisać procedurę
     """Kasowanie rekordu konia z bazy"""
     pass   
 
-#TODO: Napisać obsługę strony głównnj dla klubów
+
 @login_required()
 @group_required('klub', 'klub_admin')
-
 def kluby_index(request):
     """Główna strona dla klubbów obsługuje admin klubu. Ma w swpoich zasobach 
      zawodników, konie które zgłasza do wybranych zawodów na zasadzie par 
      zawodnik+lista_koni """
-    
+   
+    #TODO: Napisać obsługę strony głównnj dla klubów
     zawodnik_ = "Zawodnik Test"
     zawody_ = "Zawody Test"
     zgloszenia_ = "Zgłoszenia Test"
@@ -339,13 +341,46 @@ def kluby_index(request):
     
     return render(request, 'kegle_pl/zawodnicy_index.html', context=context)
 
+@login_required()
+@group_required('zawodnicy','klub_admin')
 def zgloszenie_dodaj(request, pk):
-    """Strona ze zgłoszeiem zawodnika do zawodów"""
-    
-    print(pk)
-    txt = "Nie znalazłem strony"
+    """Strona ze zgłoszeiem zawodnika do zawodów indywidualnie i z klubu"""
+    op = []
+    zaw_ = get_object_or_404(Zawodnicy, user=request.user.pk)
+    print("User ", zaw_)
+    konkurs_ = Konkursy.objects.get(pk=pk)
+    print("-"*20)
+    print(konkurs_.zawody)
+    print("Nazwa klasy",konkurs_.klasa.nazwa_klasy)
+    print("Rodzaj zawodów", konkurs_.klasa.rodzaj_klasy)
+    print("Ilość koni w konkursie", konkurs_.klasa.kategoria_klasy)
+    print("Opłata antydopingowa", konkurs_.klasa.oplata_antydopingowa)
+    print("Opłaty ", konkurs_.oplata)
+    us= OplatyGrupy.objects.get(pk = konkurs_.oplata.pk)
+    for oplata in us.oplata.all():
+#         print('%s'%(i))
+        for t in oplata.oplaty_detale.all():
+            print("Dane do pobrania:" ,t.nazwa_oplaty, t.cena, t.waluta)
+            di = {
+                "op1":t.nazwa_oplaty, 
+                "cena":t.cena, 
+                "waluta":t.waluta 
+                }
+            op.append(di)
+            
+    print("Lista opłat:",op)
+    if request.user.groups.filter(name='zawodnicy').exists():
+        konie_ = Konie.objects.filter(user_konia=zaw_.pk)
+        print("Konie zawodnika:")
+    if request.user.groups.filter(name='klub_admin').exists():
+        instytucja=instytucja_usera(zaw_.pk)
+        konie_ = Konie.objects.filter(instytucja_konia=instytucja)
+        print("Konie klubu:")
+    print(konie_)
+    print("-"*20)
     context = {
-        'txt':txt,
+        'zawody':konkurs_.zawody,
+        'konie':konie_,
     }
     return render(request, 'kegle_pl/zgloszenie_dodaj.html', context=context)
     

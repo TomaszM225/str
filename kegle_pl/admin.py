@@ -1,5 +1,7 @@
 from django.contrib import admin
-from .models import *
+from .models import Artykuly, Przepisy, Programy, Instytucje, OplatyGrupy, OplatyCeny, OplatyNazwy, \
+        Klasy, Konkursy, Zawody,  ZawodyKomunikaty, Zgloszenia, UserInstytucji, \
+        Zawodnicy, Konie, ZgloszoneKonie, Zamowienia
 from django import forms
 from ckeditor.widgets import CKEditorWidget
 
@@ -61,15 +63,19 @@ class ZawodyKomunikatyAdmin(admin.ModelAdmin):
     form = ZawodyKomunikatyAdminForm
     
     
-admin.site.register(Artykuly, ArtykulyAdmin)
-admin.site.register(Przepisy,PrzepisyAdmin)
-admin.site.register(Programy,ProgramyAdmin)
-admin.site.register(Zawody, ZawodyAdmin)
-admin.site.register(Oplaty)
-admin.site.register(Instytucje)
-admin.site.register(UserInstytucji)
-admin.site.register(Konkursy)
-admin.site.register(Klasy)
-admin.site.register(ZawodyKomunikaty,ZawodyKomunikatyAdmin)
-admin.site.register(Zawodnicy)
-admin.site.register(Zgloszenia)
+admin.site.register(Artykuly, ArtykulyAdmin)  # @UndefinedVariable
+admin.site.register(Przepisy,PrzepisyAdmin)  # @UndefinedVariable
+admin.site.register(Programy,ProgramyAdmin)  # @UndefinedVariable
+admin.site.register(Zawody, ZawodyAdmin)  # @UndefinedVariable
+admin.site.register(OplatyGrupy)
+admin.site.register(OplatyCeny)
+admin.site.register(OplatyNazwy)
+admin.site.register(Instytucje)  # @UndefinedVariable
+admin.site.register(UserInstytucji)  # @UndefinedVariable
+admin.site.register(Konkursy)  # @UndefinedVariable
+admin.site.register(Klasy)  # @UndefinedVariable
+admin.site.register(ZawodyKomunikaty,ZawodyKomunikatyAdmin)  # @UndefinedVariable
+admin.site.register(Zawodnicy) # @UndefinedVariable
+admin.site.register(Zgloszenia)  # @UndefinedVariable
+admin.site.register(ZgloszoneKonie)  # @UndefinedVariable
+admin.site.register(Zamowienia)

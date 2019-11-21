@@ -30,7 +30,12 @@
     {% else %}
         <h3><b>Zgłoszenia </b></h3>
         {% if zawodyInstancja.status_zawodow == 1 %}
-		        <a href="{% url 'str_404' %}" >Formularz zgłoszenia </a>
+        	{% for konkursy_lista in konkursy_lista %}
+		        <ul>
+		        <a href="{% url 'zgloszenie_dodaj' pk=konkursy_lista.pk %}" >{{konkursy_lista}} </a>
+		        </ul>
+		    {% endfor %}
+		        
         {% else %}
             Zgłoszenia zamknięte
         {% endif %}

@@ -194,19 +194,6 @@ class Klasy(models.Model):
     def __str__(self):
         return '%s'' - ''%s' %(self.nazwa_klasy, self.opis_klasy)
 
-class RodzajeKonkursow(models.Model):
-    """Rodzaj konkursów odbywające się na zawodach np. Krajowe, Międzynarodowe, 
-    Amatorskie. Musi być wybrany choiaż jeden"""
-    
-    nazwa_rodazju_konkursu = models.CharField(max_length=300, help_text='nazwa używana na wszystkich dok. oficjalnych')
-
-    class Meta:
-        db_table = 'n_rodzaje_konkursu'
-        verbose_name_plural = "Rodzaje"
-    
-    def __str__(self):
-        return self.nazwa_rodazju_konkursu
-
 class Zawody(Wpisy):
     """ Status zawodów otawrte można się zgłaszać, zamknięte brak 
         możliwosci edycji, odbywające_sie trwające, zablokowoand dla zgl.
@@ -217,12 +204,11 @@ class Zawody(Wpisy):
     (2, 'zablokowane_dla_zgl'),
     (3, 'odbywajace_sie'),
     )
-    
+
     oficjalna_nazwa = models.CharField(max_length=300, help_text='nazwa używana na wszystkich dok. oficjalnych')
     organizator = models.ForeignKey(Instytucje, on_delete=models.CASCADE, help_text='instytucja organizująca zawody')
     data_rozpoczecia = models.DateField()
     data_zakonczenia = models.DateField()
-    rodzaje_konkursow = models.ManyToManyField(RodzajeKonkursow, related_name='RodzajeKonkursowRelacja')
     status_zawodow = models.PositiveIntegerField(choices=STATUSU_ZAWODOW, default=1, help_text='status zawodów')
     ilosc_zgloszen = models.IntegerField(blank=True, null=True, help_text='Maxymalna ilość zgłoszeń. null bez ogr.')
     miejsce_rogrywania = models.CharField(max_length=255, blank=True, null=True)
@@ -261,35 +247,51 @@ class ZawodyKomunikaty(models.Model):
     def __str__(self):
         return str(self.zawody_id)
 
-class Oplaty(models.Model):
-    """Opłaty zestaw. Opłaty definowane są każdorazowo na nowo dla zawodów """
+class OplatyNazwy(models.Model):
+    """Lista nazw opłat np. boks, energia bus, itp , uwspólniona dla wszystkich organizatorów."""
+    
+    nazwa = models.CharField(max_length=150, help_text='Nazwa opłaty')
+    
+    class Meta:
+        db_table = 'n_oplaty_nazway'
+        verbose_name_plural = "Opłaty nazwy"
+    
+    def __str__(self):
+        return self.nazwa
+  
+class OplatyGrupy(models.Model):
+    """Opłaty agregator wg kodu opłaty."""
+    
+    kod_oplaty = models.CharField(max_length=150, help_text='Nazwa/kod opłaty')
+    organizator =  models.ForeignKey(Instytucje, on_delete=models.CASCADE, help_text='instytucja organizująca zawody')
+    oplata = models.ManyToManyField(OplatyNazwy,  through='OplatyCeny', related_name='Oplaty_Grupy')
+    
+    class Meta:
+        db_table = 'n_oplaty_grupy'
+        verbose_name_plural = "Opłaty grupy"
+        ordering = ['organizator']
+    def __str__(self):
+        return '%s' % (self.kod_oplaty)
+
+class OplatyCeny(models.Model):
+    """Lista cen opłat,  uwspólniona dla wszystkich organizatorów."""
     
     WALUTA = (
     ('zl','złoty'),
     ('eur','euro'),
     )
-    zawody = models.ForeignKey(Zawody, on_delete=models.CASCADE, related_name='ZawodyOplaty')
-    nazwa_oplaty = models.CharField(max_length=150, help_text='Nazwa opłaty')
+    grupa_oplat = models.ForeignKey(OplatyGrupy, related_name='oplaty_detale', on_delete=models.SET_NULL, null=True)
+    nazwa_oplaty =  models.ForeignKey(OplatyNazwy, related_name='oplaty_detale', on_delete=models.SET_NULL, null=True)
+    cena =  models.DecimalField(max_digits=6, decimal_places=2, help_text='Cena np. boksu u organizatora')
     waluta = models.CharField(max_length=5,choices=WALUTA, help_text='Waluta opłat')
-    wpisowe = models.DecimalField(max_digits=6, decimal_places=2, default = 0, \
-                                  help_text='główne wpisowe jeśli brak wpisz 0')
-    wpisowe_2 = models.DecimalField(max_digits=6, decimal_places=2, default = 0,\
-                                     help_text='wpisowe dla dalszych par')
-    boks_cena = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True)
-    trociny_cena = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True,help_text='Cena za jednostkę') 
-    wywoz_gowna = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True,help_text='Cena za jednostkkę')
-    energia_koniowoz_cena = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True)
-    energia_bus_cena = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True)
-    poprawiono = models.DateTimeField(auto_now=True)
     
     class Meta:
-        db_table = 'n_oplaty'
-        verbose_name_plural = "Opłaty"
-    
-    def __str__(self):
-#         return str(self.nazwa_oplaty) #póżniej napisać kod czytający również tytuł zawodów
-        return '%s'' ' '%s' % (self.nazwa_oplaty, self.zawody.tytul)
+        db_table = 'n_oplat_ceny'
+        verbose_name_plural = "Opłaty cennik"
 
+    def __str__(self):
+        return '%s'' ''%s'' - ''%s''%s' % (self.grupa_oplat, self.nazwa_oplaty, self.cena, self.waluta)
+ 
 class Konkursy(models.Model):
     """ Konkursy odbywające się na poszczególnych zawodach. Konkursy "maja"
     zawody, klasy, opłaty. Podczas Zawodów odbywają się konkursy w klasach 
@@ -298,7 +300,8 @@ class Konkursy(models.Model):
     kod_konkursu = models.CharField(max_length=25, blank=True, null=True) #zapisywany treegerem w bazie
     zawody = models.ForeignKey(Zawody, on_delete=models.CASCADE, related_name='KonkursyZawody')
     klasa = models.ForeignKey(Klasy, on_delete=models.CASCADE, related_name='KonkursyKlasy')
-    oplata = models.ForeignKey(Oplaty, on_delete=models.CASCADE, related_name='KonkursyOplaty')
+    oplata = models.ForeignKey(OplatyGrupy, on_delete=models.CASCADE, null=True, related_name='KonkursyOplaty')
+    
     poptawiono = models.DateTimeField(auto_now=True)
     nagroda_1 = models.CharField(max_length=255, blank=True, null=True)
     nagroda_3 = models.CharField(max_length=255, blank=True, null=True)
@@ -321,7 +324,7 @@ class Zawodnicy(models.Model):
     
     instytucja_zawodnika = models.ForeignKey(Instytucje, on_delete=models.CASCADE, \
                                              blank=True, null=True, related_name='ZawodnikInstytucje')
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, \
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, \
                                         blank=True, null=True, related_name='ZawodnikID')                 
     imie = models.CharField(max_length=255)
     nazwisko = models.CharField(max_length=255)
@@ -401,7 +404,7 @@ class Zgloszenia(models.Model):
     ('u','uzupełnić dane'),
     )
     utworzone = models.DateTimeField(default=timezone.now)
-    poprawiony = models.DateTimeField(auto_now=True)
+    poprawione = models.DateTimeField(auto_now=True)
     zglaszajacy = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='ZglaszajacyDoZawodow')
     zawody = models.ForeignKey(Zawody, on_delete=models.CASCADE, related_name='ZgloszeniaZawody')
     konkurs = models.ForeignKey(Konkursy, on_delete=models.CASCADE, related_name='ZgloszeniaKonkursy')
@@ -441,7 +444,26 @@ class ZgloszoneKonie(models.Model): # lista koni zgłoszona do zawodów
         """Returns the url to access a particular instance of MyModelName."""
         return reverse('lista_zglosznych_koni', args=[str(self.id)])
 
-
+class Zamowienia(models.Model):
+    """Tabela zawierająca zamówienia do zgłoszenia.
+    *-------------------------------------------------------
+    * dokończyć obsługę
+    *-------------------------------------------------------
+    """
+    
+    utworzone = models.DateTimeField(default=timezone.now)
+    poprawione = models.DateTimeField(auto_now=True)
+    zgloszenie = models.ForeignKey(Zgloszenia, on_delete=models.CASCADE, related_name='ZamowieniaZgloszenia')
+    zamowienie =  models.ForeignKey(OplatyNazwy, on_delete=models.CASCADE, related_name='ZamowienieCo')
+    ilosc = models.DecimalField(max_digits=6, decimal_places=0, help_text='Ilość zamówiona przez zawodnika')
+    
+    class Meta:
+        db_table = 'n_zamowienia'
+        verbose_name_plural = "Zamówienia"
+        
+    def __str__(self): #napisać kod pokazujący instytucje i zawodnika
+        return '%s'' (''%s'')' %(self.zgloszenie, self.utworzone.strftime('%m/%d/%Y'))
+    
 
 
 
